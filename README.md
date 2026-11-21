@@ -11,12 +11,9 @@ npm run build      # genera la versión optimizada en dist/
 npm run preview    # prueba dist/ con compresión y caché en http://localhost:4173
 ```
 
-## Qué publicar
+## Publicación
 
-Publica **la carpeta `dist/`** (nunca la raíz):
-
-- **Vercel:** conecta el repositorio; `vercel.json` ya indica `npm run build` y la carpeta `dist`.
-- **Netlify / Cloudflare Pages:** comando de build `npm run build`, carpeta de publicación `dist`. Las cabeceras de caché van en `dist/_headers`.
+El sitio está en **Vercel**, conectado a este repositorio: cada `git push` a `main` compila y publica. `dist/` no se sube; `vercel.json` define el build, las redirecciones, la caché y las cabeceras.
 
 ## Estructura
 
@@ -25,7 +22,9 @@ Publica **la carpeta `dist/`** (nunca la raíz):
 | `index.html` | Página (SEO, datos estructurados, contenido) |
 | `styles.css` | Estilos (incluye las fuentes alojadas en `fonts/`) |
 | `main.js` | Animaciones en canvas, scroll, cursor, efectos |
-| `mascot.js` | Pixel, la mascota |
+| `boot.js` | Idioma por ubicación y tema, antes de pintar |
+| `mascot.js` | Pixel, la mascota (carga diferida) |
+| `content/` | Páginas internas en español e inglés |
 | `assets/` | Capturas en WebP (480, 800 y 1200 px), íconos y logo |
 | `build.mjs` | Minifica e incrusta CSS, une y minifica JS, copia solo lo necesario |
 

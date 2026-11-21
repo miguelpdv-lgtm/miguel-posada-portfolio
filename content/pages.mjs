@@ -1,11 +1,12 @@
 // Contenido de las páginas internas. Cada objeto genera /<slug>/index.html (ver build.mjs).
-import { SITE, block, cards, shotsGrid, shot, plansHtml, PLANS, PROJECTS } from './layout.mjs';
+import { SITE, setLang, block, cards, shotsGrid, shot, wipShot, plansHtml, PLANS, PROJECTS } from './layout.mjs';
 
+setLang('es');
 const TODAY = '2026-11-20';
 const L = 'var(--lime)', CY = 'var(--cyan)', VI = 'var(--violet)', CO = 'var(--coral)';
 const service = (name, slug, desc, price) => ({
   '@type': 'Service', name, serviceType: name, url: `${SITE}/${slug}/`, description: desc,
-  provider: { '@id': `${SITE}/#business` }, areaServed: { '@type': 'Country', name: 'Colombia' },
+  provider: { '@id': `${SITE}/#business` }, areaServed: 'Worldwide',
   ...(price ? { offers: { '@type': 'Offer', priceCurrency: 'COP', price, description: 'Precio desde' } } : {}),
 });
 const article = (slug, headline, description) => ({
@@ -17,7 +18,7 @@ const prose = html => `<div class="prose reveal">${html}</div>`;
 
 const FAQ_PRECIO = ['¿Cuánto cuesta una página web en Colombia?', 'Depende del tipo de página. Conmigo, una landing page está desde <strong>$720.000</strong>, un sitio web corporativo de hasta 5 páginas desde <strong>$1.000.000</strong> con dominio y hosting por un año, y una tienda online desde <strong>$1.800.000</strong>. Las web apps se cotizan según el proyecto.'];
 const FAQ_PAGO = ['¿Cómo se paga?', 'Pagas el 50% para empezar y el 50% restante cuando la página está terminada y publicada.'];
-const FAQ_REMOTO = ['¿Trabajas con negocios fuera de Barranquilla?', 'Sí. Trabajo 100% en línea con negocios de toda Colombia. Todo el proceso se hace por WhatsApp y videollamada.'];
+const FAQ_REMOTO = ['¿Trabajas con negocios fuera de Barranquilla?', 'Sí. Trabajo 100% en línea con clientes en todo el mundo. Todo el proceso se hace por WhatsApp y videollamada.'];
 
 export const PAGES = [
   /* ======================================================= PRECIOS */
@@ -77,10 +78,10 @@ export const PAGES = [
     slug: 'diseno-paginas-web-barranquilla', crumb: 'Diseño de páginas web en Barranquilla',
     title: 'Diseño de Páginas Web en Barranquilla | Miguel Posada',
     description: 'Diseño de páginas web en Barranquilla para negocios y empresas: sitios rápidos, a la medida y optimizados para Google. Desde $720.000.',
-    kicker: 'Barranquilla · Atlántico · Toda Colombia',
+    kicker: 'Barranquilla · Colombia · Clientes en todo el mundo',
     h1: 'Diseño de páginas web en Barranquilla',
-    lead: 'Soy Miguel Posada, Ingeniero de Sistemas en Barranquilla. Diseño y desarrollo páginas web a la medida para negocios de la ciudad y de toda Colombia: rápidas, fáciles de usar desde el celular y pensadas para que tus visitas te escriban.',
-    heroShot: 'ratio', metaLine: 'Desde $720.000 · Entrega en 5 a 7 días hábiles',
+    lead: 'Soy Miguel Posada, Ingeniero de Sistemas en Barranquilla. Diseño y desarrollo páginas web a la medida para negocios de la ciudad y de todo el mundo: rápidas, fáciles de usar desde el celular y pensadas para que tus visitas te escriban.',
+    heroShot: 'ratio', heroHtml: shot('ratio', { lazy: false, sizes: '(max-width: 900px) 92vw, 540px' }), metaLine: 'Desde $720.000 · Entrega en 5 a 7 días hábiles',
     waMsg: 'Hola Miguel, soy de Barranquilla y quiero cotizar una página web',
     pixelHello: '¡Hola, vecino! Miguel también es de Barranquilla.',
     body:
@@ -95,7 +96,7 @@ export const PAGES = [
       block('02', 'Negocios de Barranquilla', `${prose(`
         <h2>Páginas web hechas en Barranquilla</h2>
         <p>Estos son algunos de los negocios de la ciudad que ya tienen su página web conmigo. Todos están en línea y puedes visitarlos:</p>`)}
-        <div style="margin-top:24px">${shotsGrid(['ema', 'ami', 'ratio', 'fly'])}</div>`) +
+        <div style="margin-top:24px">${shotsGrid(['ema', 'ami', 'ratio', 'lusarte'])}</div>`) +
       block('03', 'Servicios', cards([
         ['Sitio web corporativo', 'Hasta 5 páginas para presentar tu empresa, tus servicios y tus casos de éxito.', L, ['Ver precio', '/precios/']],
         ['Tienda online', 'Catálogo, carrito y pagos en línea para vender tus productos en todo el país.', VI, ['Tiendas online', '/tiendas-online/']],
@@ -109,14 +110,14 @@ export const PAGES = [
           <li><strong>Construir.</strong> Desarrollo la página, la pruebo en celular y computador y la optimizo para Google.</li>
           <li><strong>Lanzar.</strong> La publico en tu dominio, configuro Google Analytics y te explico cómo funciona.</li>
         </ol>
-        <p>Si estás en Barranquilla y prefieres conocernos en persona, lo coordinamos. Si estás en otra ciudad, todo funciona igual de bien por videollamada.</p>`)),
+        <p>Si estás en Barranquilla y prefieres conocernos en persona, lo coordinamos. Si estás en otra ciudad o país, todo funciona igual de bien por videollamada.</p>`)),
     faq: [
       FAQ_PRECIO,
       ['¿Cuánto tarda una página web?', 'Entre 5 y 7 días hábiles para una landing page o un sitio de hasta 5 páginas, y entre 7 y 14 para una tienda online.'],
       ['¿Me ayudas con el dominio y el hosting?', 'Sí. El plan corporativo incluye dominio .com y hosting el primer año, y yo me encargo de comprarlos y configurarlos.'],
       FAQ_PAGO, FAQ_REMOTO,
     ],
-    schema: [service('Diseño de páginas web en Barranquilla', 'diseno-paginas-web-barranquilla', 'Diseño y desarrollo de páginas web a la medida para negocios de Barranquilla y toda Colombia.', '720000')],
+    schema: [service('Diseño de páginas web en Barranquilla', 'diseno-paginas-web-barranquilla', 'Diseño y desarrollo de páginas web a la medida para negocios de Barranquilla y de todo el mundo.', '720000')],
     related: [['Precios', '/precios/'], ['Tiendas online', '/tiendas-online/'], ['Páginas web para restaurantes', '/paginas-web-para-restaurantes/'], ['Proyectos', '/proyectos/']],
   },
 
@@ -128,7 +129,7 @@ export const PAGES = [
     kicker: 'E-commerce · Pagos en línea',
     h1: 'Tiendas online listas para vender en Colombia',
     lead: 'Tu tienda online con catálogo, carrito, panel de administración y pagos en línea con Wompi o Bold. Diseñada para tu marca, rápida en el celular y conectada a WhatsApp para que no pierdas ninguna venta.',
-    heroShot: 'ema', metaLine: 'Desde $1.800.000 · Entrega en 7 a 14 días hábiles',
+    heroShot: 'ema', heroHtml: shot('ema', { lazy: false, sizes: '(max-width: 900px) 92vw, 540px' }), metaLine: 'Desde $1.800.000 · Entrega en 7 a 14 días hábiles',
     waMsg: 'Hola Miguel, quiero cotizar una tienda online',
     pixelHello: '¿Quieres vender en línea? Mira estas tiendas.',
     body:
@@ -140,7 +141,7 @@ export const PAGES = [
         ['Rápida y segura', 'Carga en segundos, con certificado de seguridad (HTTPS) y código optimizado.', L],
         ['Lista para Google', 'Cada producto con su título, descripción y datos estructurados.', CY],
       ])) +
-      block('02', 'Tiendas que ya venden', `${prose(`<h2>Tiendas online que diseñé</h2><p>Estas tiendas ya están vendiendo en Colombia. Cada una tiene un diseño propio según su marca y su forma de vender.</p>`)}<div style="margin-top:24px">${shotsGrid(['ema', 'luminni', 'ami', 'ordenio'])}</div>`) +
+      block('02', 'Tiendas que ya venden', `${prose(`<h2>Tiendas online que diseñé</h2><p>Estas tiendas ya están vendiendo en Colombia. Cada una tiene un diseño propio según su marca y su forma de vender.</p>`)}<div style="margin-top:24px">${shotsGrid(['ema', 'luminni', 'lusarte', 'ordenio'])}</div>`) +
       block('03', 'Tienda online o catálogo por WhatsApp', prose(`
         <h2>¿Qué te conviene más?</h2>
         <table>
@@ -170,7 +171,7 @@ export const PAGES = [
     kicker: 'Páginas de aterrizaje · Campañas',
     h1: 'Landing pages que convierten visitas en clientes',
     lead: 'Una landing page es una sola página con un solo objetivo: que la persona te escriba, te llame o compre. Es la forma más rápida y económica de tener presencia en internet y la mejor página de destino para tus anuncios.',
-    heroShot: 'fly', metaLine: 'Desde $720.000 · Entrega en 5 a 7 días hábiles',
+    heroShot: 'fly', heroHtml: shot('fly', { lazy: false, sizes: '(max-width: 900px) 92vw, 540px' }), metaLine: 'Desde $720.000 · Entrega en 5 a 7 días hábiles',
     waMsg: 'Hola Miguel, quiero cotizar una landing page',
     pixelHello: 'Una página, un objetivo: que te escriban.',
     body:
@@ -209,7 +210,7 @@ export const PAGES = [
     kicker: 'Restaurantes · Cafés · Domicilios',
     h1: 'Páginas web para restaurantes y cafés',
     lead: 'Tu menú en línea, pedidos que llegan listos a tu WhatsApp y pagos con Wompi. Una página web para que tus clientes vean tu carta, pidan a domicilio y te encuentren en Google.',
-    heroShot: 'ratio', metaLine: 'Menú en línea · Pedidos por WhatsApp · Pagos en línea',
+    heroShot: 'ratio', heroHtml: shot('ratio', { lazy: false, sizes: '(max-width: 900px) 92vw, 540px' }), metaLine: 'Menú en línea · Pedidos por WhatsApp · Pagos en línea',
     waMsg: 'Hola Miguel, tengo un restaurante y quiero una página web',
     pixelHello: '¿Tienes un restaurante? Mira lo que hizo Miguel con Ratio.',
     body:
@@ -244,7 +245,7 @@ export const PAGES = [
     kicker: 'Salones · Peluquerías · Belleza',
     h1: 'Páginas web para salones de belleza',
     lead: 'Que tus clientas agenden su cita, compren tus productos y vean tu trabajo desde el celular. Diseño páginas web para salones con agenda en línea, tienda y WhatsApp integrados.',
-    heroShot: 'ami', metaLine: 'Agenda de citas · Tienda de productos · WhatsApp',
+    heroShot: 'ami', heroHtml: shot('ami', { lazy: false, sizes: '(max-width: 900px) 92vw, 540px' }), metaLine: 'Agenda de citas · Tienda de productos · WhatsApp',
     waMsg: 'Hola Miguel, tengo un salón de belleza y quiero una página web',
     pixelHello: 'Miguel ya hizo páginas para dos salones de rizos.',
     body:
@@ -274,7 +275,7 @@ export const PAGES = [
     kicker: 'Consultoras · Empresas de servicios',
     h1: 'Páginas web para consultoras',
     lead: 'Un sitio web corporativo que transmite confianza, explica tus servicios con claridad y convierte visitas en reuniones. Pensado para consultoras, firmas y empresas de servicios profesionales.',
-    heroShot: 'fly', metaLine: '5 páginas · Desde $1.000.000 con dominio y hosting · $800.000 si ya los tienes',
+    heroShot: 'fly', heroHtml: shot('fly', { lazy: false, sizes: '(max-width: 900px) 92vw, 540px' }), metaLine: '5 páginas · Desde $1.000.000 con dominio y hosting · $800.000 si ya los tienes',
     waMsg: 'Hola Miguel, tengo una consultora y quiero cotizar una página web',
     pixelHello: 'Para consultoras, la confianza lo es todo.',
     body:
@@ -308,10 +309,10 @@ export const PAGES = [
   {
     slug: 'proyectos', crumb: 'Proyectos',
     title: 'Proyectos: Páginas Web y Tiendas Online | Miguel Posada',
-    description: 'Portafolio de páginas web, tiendas online y web apps en producción: Ema Rizos, AmicrespA, FlyLatam Plus, Ordenio, Luminni y Ratio Coffee Baq.',
-    kicker: 'Portafolio · 6 proyectos en producción',
+    description: 'Portafolio de páginas web y tiendas online en producción: Ema Rizos, AmicrespA, FlyLatam Plus, Ordenio, Luminni, Lusarte y Ratio Coffee Baq.',
+    kicker: 'Portafolio · 7 en producción · 1 en desarrollo',
     h1: 'Páginas web que ya están trabajando',
-    lead: 'Cada proyecto se diseñó desde cero para su marca y su forma de vender. Todos están en línea: puedes visitarlos y probarlos.',
+    lead: 'Cada proyecto se diseñó desde cero para su marca y su forma de vender. Los que están en producción puedes visitarlos y probarlos.',
     waMsg: 'Hola Miguel, vi tus proyectos y quiero una página así',
     pixelHello: '¡Bienvenido al portafolio de Miguel!',
     body: [
@@ -320,12 +321,17 @@ export const PAGES = [
       ['fly', 'Agencia de viajes', 'Sitio corporativo para una agencia de viajes empresariales y vacacionales. Organiza seis líneas de servicio (planes vacacionales, viajes corporativos, grupos y eventos, cruceros, vuelos chárter y gestión integral) y convierte visitas en cotizaciones por WhatsApp.', ['Diseño a la medida', 'WhatsApp', 'SEO']],
       ['ordenio', 'SaaS', 'Mi propia plataforma para que cualquier negocio convierta su WhatsApp en una tienda: catálogo, carrito y pagos en un solo link, con subdominios personalizados y pagos con Wompi.', ['SaaS', 'Subdominios', 'Wompi']],
       ['luminni', 'E-commerce editorial', 'Tienda de una casa de velas y objetos aromáticos, con colecciones presentadas como historias, manifiesto de marca y bolsa de compras.', ['E-commerce', 'Diseño editorial']],
+      ['lusarte', 'E-commerce', 'Tienda online de insumos para hacer velas (ceras, parafinas, fragancias, moldes y recipientes) y velas artesanales hechas a mano en Barranquilla, con domicilio local y envíos a toda Colombia.', ['E-commerce', 'Pagos en línea', 'Envíos nacionales']],
       ['ratio', 'Cafetería · Pedidos en línea', 'Página de una cafetería de especialidad en Barranquilla, construida sobre Ordenio: menú, horarios, domicilios y compra en línea con Wompi.', ['Ordenio', 'Wompi', 'Domicilios']],
     ].map(([k, type, desc, tags], i) => `<article class="case reveal" style="--c:${PROJECTS[k].c}">${shot(k, i === 0 ? { lazy: false } : {})}<div>
         <span class="p-idx">P/0${i + 1}</span>
         <h2>${PROJECTS[k].name}</h2><p class="type">${type}</p>
         <div class="prose"><p>${desc}</p><p><a href="${PROJECTS[k].url}" target="_blank" rel="noopener">Visitar ${PROJECTS[k].dom} →</a></p></div>
-        <div class="tags">${tags.map(t => `<span>${t}</span>`).join('')}</div></div></article>`).join(''),
+        <div class="tags">${tags.map(t => `<span>${t}</span>`).join('')}</div></div></article>`).join('') + `<article class="case reveal" style="--c:#6fd6d6">${wipShot('marea', 'Marea Rizada')}<div>
+        <span class="p-idx">P/08</span>
+        <h2>Marea Rizada</h2><p class="type">Salón de rizos · En desarrollo</p>
+        <div class="prose"><p>Sitio para un salón especializado en rizos, con diagnóstico, corte rizo a rizo, rutinas para cada patrón del 2A al 4C, reservas y tienda. Lo estoy construyendo ahora mismo y todavía no está publicado.</p></div>
+        <p class="project-status"><i></i>En desarrollo · Próximamente</p></div></article>`,
     schema: [{ '@type': 'ItemList', name: 'Proyectos de Miguel Posada', itemListElement: Object.values(PROJECTS).map((p, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'CreativeWork', name: p.name, url: p.url, image: `${SITE}/assets/${p.img}.webp`, creator: { '@id': `${SITE}/#person` } } })) }],
     related: [['Precios', '/precios/'], ['Tiendas online', '/tiendas-online/'], ['Diseño de páginas web en Barranquilla', '/diseno-paginas-web-barranquilla/']],
   },

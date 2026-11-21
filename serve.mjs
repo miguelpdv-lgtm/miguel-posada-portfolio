@@ -15,7 +15,7 @@ const TYPES = {
 };
 const COMPRESSIBLE = new Set(['.html', '.js', '.css', '.json', '.webmanifest', '.xml', '.txt', '.svg']);
 const cacheFor = p =>
-  /^\/app\.[\w]+\.js$/.test(p) || p.startsWith('/fonts/') ? 'public, max-age=31536000, immutable'
+  /^\/(app|pixel)\.[\w]+\.js$/.test(p) || p.startsWith('/fonts/') ? 'public, max-age=31536000, immutable'
   : p.startsWith('/assets/') ? 'public, max-age=2592000, stale-while-revalidate=86400'
   : 'public, max-age=0, must-revalidate';
 

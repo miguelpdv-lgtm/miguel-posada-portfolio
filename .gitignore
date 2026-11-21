@@ -12,6 +12,8 @@ cotizaciones/
 # Configuración local de herramientas
 .claude/
 .impeccable/hook.cache.json
+.impeccable/audit/
+.vercel/
 
 # Sistema
 Thumbs.db

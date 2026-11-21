@@ -6,13 +6,19 @@
 
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const MINT = '202,255,0';
-  const MINT_HI = '228,255,107';
-  const CREAM = '240,237,230';
-  const CYAN = '79,216,235';
-  const VIOLET = '167,139,250';
-  const CORAL = '255,107,74';
-  const ACCENTS = [MINT, CYAN, VIOLET, CORAL];
+  let MINT, MINT_HI, CREAM, CYAN, VIOLET, CORAL, ACCENTS;
+  const PALETTE = {
+    dark: ['202,255,0', '228,255,107', '240,237,230', '79,216,235', '167,139,250', '255,107,74'],
+    light: ['76,101,0', '63,84,0', '23,24,15', '11,111,128', '91,63,209', '191,59,27'],
+  };
+  const setPalette = () => {
+    [MINT, MINT_HI, CREAM, CYAN, VIOLET, CORAL] = PALETTE[document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'];
+    ACCENTS = [MINT, CYAN, VIOLET, CORAL];
+  };
+  setPalette();
+  const EN = document.documentElement.lang === 'en';
+  document.documentElement.classList.add('app');
+  const motionOff = () => document.documentElement.classList.contains('motion-off');
   const pick = a => a[Math.random() * a.length | 0];
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -65,6 +71,7 @@
     const fixed = c.fixed ?? (c.fixed = fixedEl(c.canvas));
     boxes.set(c.canvas, { l: r.left, t: r.top + (fixed ? 0 : scrollY), w: r.width, h: r.height, fixed });
   }
+  const drawStill = c => { c.ctx.clearRect(0, 0, c.w, c.h); c.api.draw(c.ctx, performance.now() / 1000 + 10, 0, c.w, c.h); };
   function register(canvas, api) {
     if (!canvas) return null; // la página no tiene este canvas
     const ctx = canvas.getContext('2d');
@@ -74,7 +81,7 @@
       c.w = s.w; c.h = s.h;
       measure(c);
       api.setup && api.setup(c.w, c.h, ctx);
-      if (REDUCED) api.draw(ctx, 2, 0, c.w, c.h);
+      if (REDUCED || motionOff()) drawStill(c);
     };
     new ResizeObserver(resize).observe(canvas);
     new IntersectionObserver(([e]) => { c.visible = e.isIntersecting; }, { rootMargin: '80px' }).observe(canvas);
@@ -82,18 +89,25 @@
     return c;
   }
   let last = performance.now();
+  let rafId = 0, tick = 0;
   function loop(now) {
+    rafId = 0;
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     const t = now / 1000;
+    tick++;
     for (const c of components) {
       if (!c.visible || !c.w) continue;
+      c.acc = (c.acc || 0) + dt;
+      if (c.api.every && tick % c.api.every) continue; // el fondo se redibuja a 30 fps
       c.ctx.clearRect(0, 0, c.w, c.h);
-      c.api.draw(c.ctx, t, dt, c.w, c.h);
+      c.api.draw(c.ctx, t, c.acc, c.w, c.h);
+      c.acc = 0;
     }
-    requestAnimationFrame(loop);
+    if (!motionOff()) rafId = requestAnimationFrame(loop);
   }
-  if (!REDUCED) requestAnimationFrame(loop);
+  const startLoop = () => { if (!REDUCED && !motionOff() && !rafId) { last = performance.now(); rafId = requestAnimationFrame(loop); } };
+  startLoop();
 
   // re-medir cuando cambia el layout (fuentes, imágenes, resize)
   let remeasureQueued = false;
@@ -125,6 +139,7 @@
     const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
     const grid = document.createElement('canvas');
     const c = register(canvas, {
+      every: 2,
       setup(w, h) {
         pulses = [];
         const d = Math.min(devicePixelRatio || 1, 2);
@@ -205,7 +220,8 @@
       x = lerp(x, mouse.x, .35); y = lerp(y, mouse.y, .35);
       cur.style.transform = `translate3d(${x}px,${y}px,0)`;
       cur.classList.toggle('on', mouse.active);
-      label.textContent = `${pad(mouse.x)} · ${pad(mouse.y + scrollY)}`;
+      const coords = `${pad(mouse.x)} · ${pad(mouse.y + scrollY)}`;
+      if (coords !== label.textContent) label.textContent = coords;
       requestAnimationFrame(tick);
     })();
     document.addEventListener('pointerover', e => cur.classList.toggle('hover', !!e.target.closest('a,button,.tilt')));
@@ -216,7 +232,7 @@
      ========================================================== */
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/<>_#';
   function scramble(el, dur = 800) {
-    if (REDUCED) return;
+    if (REDUCED || motionOff()) return;
     const final = el.dataset.text || (el.dataset.text = el.textContent);
     const start = performance.now();
     cancelAnimationFrame(el._scr);
@@ -260,13 +276,16 @@
 
   /* ---------- mobile menu ---------- */
   const menuBtn = $('.menu-btn'), nav = $('#nav');
-  if (menuBtn && nav)
-  menuBtn.addEventListener('click', () => {
-    const open = menuBtn.getAttribute('aria-expanded') !== 'true';
+  const setMenu = open => {
     menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? (EN ? 'Close menu' : 'Cerrar menú') : (EN ? 'Open menu' : 'Abrir menú'));
     nav.classList.toggle('open', open);
-  });
-  $$('a', nav).forEach(a => a.addEventListener('click', () => { menuBtn.setAttribute('aria-expanded', 'false'); nav.classList.remove('open'); }));
+  };
+  const menuOpen = () => menuBtn.getAttribute('aria-expanded') === 'true';
+  menuBtn.addEventListener('click', () => setMenu(!menuOpen()));
+  $$('a', nav).forEach(a => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen()) { setMenu(false); menuBtn.focus(); } });
+  document.addEventListener('pointerdown', e => { if (menuOpen() && !nav.contains(e.target) && !menuBtn.contains(e.target)) setMenu(false); });
 
   /* ==========================================================
      5. TYPEWRITER (token-coloured)
@@ -280,7 +299,7 @@
         const c = esc(ch);
         html += cls ? `<span class="${cls}">${c}</span>` : c;
         el.innerHTML = html + caret;
-        if (!REDUCED) await sleep(ch === '\n' ? speed * 4 : speed + Math.random() * speed * .6);
+        if (!REDUCED && !motionOff()) await sleep(ch === '\n' ? speed * 4 : speed + Math.random() * speed * .6);
       }
     }
     return html;
@@ -299,9 +318,9 @@
     const el = $('#hero-code');
     if (!el) return;
     const variants = [
-      ['sitio web', 'true', 'tus clientes'],
-      ['tienda online', 'true', 'más ventas'],
-      ['web app', 'true', 'equipos felices'],
+      EN ? ['website', 'true', 'your customers'] : ['sitio web', 'true', 'tus clientes'],
+      EN ? ['online store', 'true', 'more sales'] : ['tienda online', 'true', 'más ventas'],
+      EN ? ['web app', 'true', 'happy teams'] : ['web app', 'true', 'equipos felices'],
     ];
     let i = 0;
     await sleep(900);
@@ -309,12 +328,13 @@
       const [name, perf, users] = variants[i++ % variants.length];
       await type(el, [
         ['const ', 'tk-k'], ['app', 'tk-f'], [' = {\n'],
-        ['  tipo: '], [`'${name}'`, 'tk-s'], [',\n'],
-        ['  rendimiento: '], [perf, 'tk-n'], [',\n'],
-        ['  usuarios: '], [`'${users}'`, 'tk-s'], ['\n}'],
+        [EN ? '  type: ' : '  tipo: '], [`'${name}'`, 'tk-s'], [',\n'],
+        [EN ? '  performance: ' : '  rendimiento: '], [perf, 'tk-n'], [',\n'],
+        [EN ? '  users: ' : '  usuarios: '], [`'${users}'`, 'tk-s'], ['\n}'],
       ], 34);
       if (REDUCED) return;
       await sleep(3800);
+      while (motionOff()) await sleep(400);
       await erase(el);
       await sleep(350);
     }
@@ -323,11 +343,11 @@
   // IDE — types once when visible
   $('.ide')?.addEventListener('revealed', () => {
     type($('#ide-code'), [
-      ['export function ', 'tk-k'], ['crearSitioWeb', 'tk-f'], ['() {\n'],
+      ['export function ', 'tk-k'], [EN ? 'createWebsite' : 'crearSitioWeb', 'tk-f'], ['() {\n'],
       ['    return ', 'tk-k'], ['{\n'],
-      ['      rendimiento: '], ['true', 'tk-n'], [',\n'],
+      [EN ? '      performance: ' : '      rendimiento: '], ['true', 'tk-n'], [',\n'],
       ['      seo: '], ['true', 'tk-n'], [',\n'],
-      ['      resultados: '], ["'más clientes'", 'tk-s'], ['\n'],
+      [EN ? '      results: ' : '      resultados: '], [EN ? "'more customers'" : "'más clientes'", 'tk-s'], ['\n'],
       ['    }\n'], ['}'],
     ], 22);
   });
@@ -448,7 +468,7 @@
               if (pk.i >= pk.chain.length) return false;
             }
             const rr = routes[pk.chain[pk.i]];
-            const pc = HIT_COL[rr.hit] || MINT;
+            const pc = hitCol(rr.hit);
             // glow trail
             for (let s = 0; s < 6; s++) {
               const [x, y] = pointAt(rr.p, pk.p - s * .035);
@@ -474,7 +494,7 @@
         }
       }
     });
-    const HIT_COL = { api: VIOLET, db: CORAL, front: CYAN, code: MINT };
+    const hitCol = k => ({ api: VIOLET, db: CORAL, front: CYAN, code: MINT })[k] || MINT;
     function flash(el) {
       el.classList.add('hit');
       clearTimeout(el._hit);
@@ -546,7 +566,7 @@
     new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(pipe);
     if (REDUCED) return;
     for (;;) {
-      if (!visible) { await sleep(400); continue; }
+      if (!visible || motionOff()) { await sleep(400); continue; }
       for (let i = 0; i < boxes.length; i++) {
         boxes[i].classList.add('hit');
         await sleep(380);
@@ -688,4 +708,75 @@
       link_url: a.href.split('?')[0],
     });
   });
+
+  /* ==========================================================
+     17. PIXEL — se carga cuando la página ya está lista
+     ========================================================== */
+  (() => {
+    let loaded = false;
+    const load = () => {
+      if (loaded) return; loaded = true;
+      const s = document.createElement('script');
+      s.src = document.documentElement.dataset.pixel || '/mascot.js';
+      s.async = true;
+      document.body.appendChild(s);
+    };
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(e => addEventListener(e, load, { once: true, passive: true }));
+    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 1500 }) : load());
+    const later = () => setTimeout(idle, 1200);
+    document.readyState === 'complete' ? later() : addEventListener('load', later, { once: true });
+  })();
+
+  /* ==========================================================
+     18. TEMA E IDIOMA — elección manual, recordada en este navegador
+     ========================================================== */
+  (() => {
+    const root = document.documentElement;
+    const save = (k, v) => { try { localStorage.setItem(k, v); } catch { /* sin almacenamiento */ } };
+    const saved = () => { try { return localStorage.getItem('theme'); } catch { return null; } };
+    const btn = $('[data-theme-toggle]');
+    const meta = $('meta[name="theme-color"]');
+    const label = t => (EN ? (t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode') : (t === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'));
+    const paint = () => {
+      const t = root.dataset.theme === 'light' ? 'light' : 'dark';
+      if (meta) meta.content = t === 'light' ? '#f6f4ec' : '#0b0c09';
+      if (btn) { btn.setAttribute('aria-label', label(t)); btn.title = label(t); }
+    };
+    const apply = t => {
+      root.dataset.theme = t; root.style.colorScheme = t;
+      setPalette(); paint();
+      for (const c of components) {
+        if (!c.w) continue;
+        c.api.setup && c.api.setup(c.w, c.h, c.ctx);
+        if (REDUCED || motionOff()) drawStill(c);
+      }
+      dispatchEvent(new CustomEvent('themechange', { detail: t }));
+    };
+    paint();
+    btn?.addEventListener('click', () => {
+      const t = root.dataset.theme === 'light' ? 'dark' : 'light';
+      save('theme', t); apply(t);
+    });
+    // sigue al sistema mientras el visitante no haya elegido
+    matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => { if (!saved()) apply(e.matches ? 'light' : 'dark'); });
+    // pausar o reanudar todas las animaciones (WCAG 2.2.2)
+    const mBtn = $('[data-motion-toggle]');
+    const mPaint = () => {
+      if (!mBtn) return;
+      const off = motionOff();
+      const text = off ? (EN ? 'Play animations' : 'Reanudar animaciones') : (EN ? 'Pause animations' : 'Pausar animaciones');
+      mBtn.setAttribute('aria-label', text); mBtn.title = text;
+      mBtn.setAttribute('aria-pressed', off);
+    };
+    mPaint();
+    mBtn?.addEventListener('click', () => {
+      const off = !motionOff();
+      root.classList.toggle('motion-off', off);
+      save('motion', off ? 'off' : 'on');
+      mPaint();
+      if (!off) startLoop();
+      dispatchEvent(new CustomEvent('motionchange', { detail: off }));
+    });
+    $$('[data-lang-switch]').forEach(a => a.addEventListener('click', () => save('lang', a.dataset.langSwitch)));
+  })();
 })();

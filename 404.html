@@ -2,6 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>
+(function(){var d=document.documentElement,g=function(k){try{return localStorage.getItem(k)}catch(e){return null}},t=g('theme');
+if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';d.setAttribute('data-theme',t);d.style.colorScheme=t;
+var l=g('lang');if(location.pathname.indexOf('/en/')===0||l==='en'||(!l&&(navigator.language||'').toLowerCase().indexOf('es')!==0))d.lang='en';})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Página no encontrada — Miguel Posada</title>
 <meta name="robots" content="noindex, follow">
@@ -23,6 +28,10 @@
   p{margin-top:14px;color:var(--dim);line-height:1.6}
   a{display:inline-flex;margin-top:26px;padding:12px 22px;background:var(--lime);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none}
   a:hover{background:var(--cream)}
+  :root[data-theme=light]{--bg:#f6f4ec;--lime:#4c6500;--cream:#17180f;--dim:#4d4d42}
+  :root[data-theme=light] a{background:#cbff00;color:#0b0c09;border:1px solid #0b0c09}
+  :root[data-theme=light] a:hover{background:#e2ff5c}
+  :root[data-theme=light] body{background-image:linear-gradient(rgba(23,24,15,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(23,24,15,.05) 1px,transparent 1px)}
 </style>
 </head>
 <body>
@@ -36,8 +45,14 @@
 <script>
 // Pixel confundido
 (() => {
+  if (document.documentElement.lang === 'en') {
+    document.title = 'Page not found — Miguel Posada';
+    document.querySelector('h1').textContent = 'THIS PAGE GOT LOST.';
+    document.querySelector('main p:not(.code)').textContent = 'Pixel looked everywhere and couldn’t find it. Head back home to see Miguel’s projects and services.';
+    const a = document.querySelector('main a'); a.textContent = 'Back to home →'; a.href = '/en/';
+  }
   const cv = document.getElementById('c'), ctx = cv.getContext('2d');
-  const L = '#cbff00', D = '#0b0c09';
+  const L = document.documentElement.dataset.theme === 'light' ? '#587400' : '#cbff00', D = '#0b0c09', F = '#cbff00';
   const rr = (x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function draw(t) {
@@ -51,7 +66,7 @@
     rr(-72, -125, 144, 118, 20); ctx.fillStyle = '#131410'; ctx.fill(); ctx.lineWidth = 5; ctx.stroke();
     ctx.fillStyle = '#1f2119'; rr(-69, -122, 138, 22, 17); ctx.fill();
     ['#ff6b5e', '#ffc93d', L].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(-52 + i * 14, -111, 4.5, 0, 7); ctx.fill(); });
-    rr(-58, -94, 116, 76, 12); ctx.fillStyle = L; ctx.fill();
+    rr(-58, -94, 116, 76, 12); ctx.fillStyle = F; ctx.fill();
     const look = still ? 0 : Math.sin(t * 1.2) * 6;
     ctx.fillStyle = D;
     for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 22 + look, -64, 8, 10, 0, 0, 7); ctx.fill(); }

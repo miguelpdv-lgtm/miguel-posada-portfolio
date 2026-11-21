@@ -7,24 +7,39 @@
   'use strict';
 
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const C = { lime: '#cbff00', panel: '#131410', panel2: '#1f2119', dark: '#0b0c09' };
+  const C = { lime: '#cbff00', line: '#cbff00', panel: '#131410', panel2: '#1f2119', dark: '#0b0c09' };
+  const EN = document.documentElement.lang === 'en';
+  const paused = () => document.documentElement.classList.contains('motion-off');
+  const inkTheme = () => {
+    const light = document.documentElement.dataset.theme === 'light';
+    C.line = light ? '#587400' : C.lime;
+    C.dust = light ? '23,24,15' : '240,237,230';
+  };
+  inkTheme();
   const CONFETTI = ['#cbff00', '#f0ede6', '#a78bfa', '#ff6b4a', '#4fd8eb'];
 
   // Qué hace Pixel en cada sección
   // Cada página puede definir sus propias frases con window.PIXEL_SECTIONS (ver build.mjs)
   const SECTIONS = window.PIXEL_SECTIONS || [
     { sel: '.hero', x: .9, pose: 'wave', mood: 'happy', say: '¡Hola! Soy Pixel, el asistente de Miguel. Baja conmigo ↓' },
-    { sel: '#trabajo', x: .1, pose: 'point', mood: 'excited', say: 'Estos 5 sitios ya están en producción. ¡Pasa el mouse por encima!' },
+    { sel: '#trabajo', x: .1, pose: 'point', mood: 'excited', say: 'Estos sitios ya están en línea, y Marea Rizada viene en camino.' },
     { sel: '#servicios', x: .9, pose: 'type', mood: 'happy', say: 'Diseño, código, tiendas online y soporte. Todo en un solo lugar.' },
     { sel: '#sobre-mi', x: .1, pose: 'think', mood: 'curious', say: '¿Código limpio y escalable? Así trabaja Miguel.' },
     { sel: '.process', x: .9, pose: 'idle', mood: 'happy', say: 'Cuatro pasos y tu página queda en línea.' },
     { sel: '#preguntas', x: .1, pose: 'think', mood: 'curious', say: '¿Dudas sobre precios o tiempos? Aquí están las respuestas.' },
     { sel: '#contacto', x: .86, pose: 'wave', mood: 'excited', say: 'Pagas 50% al empezar y 50% al entregar. ¡Escríbele a Miguel!', party: true },
   ];
-  const TAPS = [
+  const TAPS = EN ? [
+    'Haha, that tickles!',
+    'I’m drawn with pure JavaScript. Not a single image.',
+    'Miguel’s websites load fast, even on a phone.',
+    'Optimized for Google and for any phone.',
+    'Does your business have a website yet?',
+    'Landing pages, online stores, web apps and technical SEO.',
+  ] : [
     '¡Jaja, eso hace cosquillas!',
     'Me dibujaron con JavaScript puro. Ni una sola imagen.',
-    'Las páginas de Miguel cargan en 1 segundo.',
+    'Las páginas de Miguel cargan rápido, hasta en celular.',
     'Optimizadas para Google y para cualquier celular.',
     '¿Tu negocio todavía no tiene página web?',
     'Landing pages, tiendas online, web apps y SEO técnico.',
@@ -46,22 +61,28 @@
   };
 
   /* ---------- DOM ---------- */
+  // Sprite pequeño que se mueve con transform (GPU), en vez de un canvas de pantalla completa
+  const SPRITE = { w: 360, h: 270, ox: 180, oy: 215 };
+  const IDLE_MS = 66;      // quieto: ~15 cuadros por segundo
   const cv = document.createElement('canvas');
   cv.className = 'pixel-canvas';
   cv.setAttribute('aria-hidden', 'true');
   const ctx = cv.getContext('2d');
 
+  const shadow = document.createElement('div');
+  shadow.className = 'pixel-shadow';
+  shadow.setAttribute('aria-hidden', 'true');
+
   const hit = document.createElement('button');
   hit.className = 'pixel-hit';
   hit.type = 'button';
-  hit.setAttribute('aria-label', 'Pixel, la mascota de la página. Tócalo para que hable');
+  hit.setAttribute('aria-label', EN ? 'Pixel, the site mascot. Tap to hear from Pixel' : 'Pixel, la mascota de la página. Tócalo para que hable');
 
   const bubble = document.createElement('div');
   bubble.className = 'pixel-bubble';
-  bubble.setAttribute('role', 'status');
-  bubble.setAttribute('aria-live', 'polite');
-  bubble.innerHTML = '<span class="pixel-name">Pixel</span><span class="pixel-text"></span><button type="button" class="pixel-close" aria-label="Ocultar a Pixel">×</button>';
+  bubble.innerHTML = '<span class="pixel-name">Pixel</span><span class="pixel-text" aria-hidden="true"></span><span class="pixel-sr" role="status" aria-live="polite"></span><button type="button" class="pixel-close" aria-label="' + (EN ? 'Hide Pixel' : 'Ocultar a Pixel') + '">×</button>';
   const bubbleText = bubble.querySelector('.pixel-text');
+  const bubbleSr = bubble.querySelector('.pixel-sr');
   const bubbleSize = { w: 0, h: 0 };
   new ResizeObserver(([e]) => {
     const b = e.borderBoxSize && e.borderBoxSize[0];
@@ -69,27 +90,16 @@
     bubbleSize.h = b ? b.blockSize : bubble.offsetHeight;
   }).observe(bubble);
 
-  document.body.append(cv, hit, bubble);
+  document.body.append(shadow, cv, hit, bubble);
 
   /* ---------- estado ---------- */
-  let W = 0, H = 0, S = .58;
-  let dirty = null; // zona del canvas a borrar en el siguiente cuadro
-  function resize() {
-    const d = Math.min(devicePixelRatio || 1, 2);
-    W = innerWidth; H = innerHeight;
-    cv.width = Math.round(W * d); cv.height = Math.round(H * d);
-    ctx.setTransform(d, 0, 0, d, 0, 0);
-    S = W < 640 ? .42 : W < 1100 ? .5 : .58;
-    dirty = { x: 0, y: 0, w: W, h: H };
-  }
-  addEventListener('resize', resize);
-  resize();
-
-  const mouse = { x: W / 2, y: H / 2 };
-  addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+  let W = 0, H = 0, S = .58, D = 1;
+  const mouse = { x: innerWidth / 2, y: innerHeight / 2 };
+  const seen = store.get('pixel-seen') === '1';
+  store.set('pixel-seen', '1');
 
   const st = {
-    x: W * .9, facing: -1, walk: 0, walking: false,
+    x: innerWidth * .9, facing: -1, walk: 0, walking: false,
     jz: 0, jv: 0,               // salto
     squash: 1, squashV: 0,      // aplastamiento al aterrizar
     fall: 0,                    // -1 trepando … 1 deslizándose
@@ -98,9 +108,38 @@
   };
   st.peekAmt = st.peek ? 1 : 0;
   let current = -1, pending = -1, pendingSince = 0, lastScroll = scrollY, sv = 0;
-  let introStart = performance.now() / 1000, introDone = REDUCED;
+  let introStart = 0, introDone = REDUCED || seen || st.peek || paused(); // la caída solo se ve una vez por visita
   const partied = new Set();
   let confetti = [], dust = [];
+
+  /* ---------- planificador: 60 fps en movimiento, 15 quieto, 0 dormido ---------- */
+  let raf = 0, idleTimer = 0, asleep = false, awakeUntil = 0, last = 0;
+  function wake(ms = 6000) {
+    if (paused()) { if (!raf) raf = requestAnimationFrame(frame); return; } // solo un cuadro, sin movimiento
+    awakeUntil = Math.max(awakeUntil, performance.now() + ms);
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = 0; }
+    if (asleep) { asleep = false; last = performance.now(); }
+    if (!raf) raf = requestAnimationFrame(frame);
+  }
+
+  function resize() {
+    W = innerWidth; H = innerHeight;
+    S = W < 640 ? .42 : W < 1100 ? .5 : .58;
+    D = Math.min(devicePixelRatio || 1, 2);
+    const w = SPRITE.w * S, h = SPRITE.h * S;
+    cv.width = Math.round(w * D); cv.height = Math.round(h * D);
+    cv.style.width = `${w}px`; cv.style.height = `${h}px`;
+    shadow.style.width = `${110 * S}px`; shadow.style.height = `${18 * S}px`;
+    hit.style.width = `${180 * S}px`;
+    if (fx && !fx.hidden) { fx.width = W; fx.height = H; }
+    wake(1500);
+  }
+
+  addEventListener('pointermove', e => {
+    mouse.x = e.clientX; mouse.y = e.clientY;
+    if (asleep) wake(); else awakeUntil = Math.max(awakeUntil, performance.now() + 4000);
+  }, { passive: true });
+  addEventListener('scroll', () => wake(3000), { passive: true });
 
   /* ---------- globo de diálogo ---------- */
   let hideTimer = 0, typeTimer = 0;
@@ -108,79 +147,88 @@
     if (st.peek) return;
     clearTimeout(hideTimer); clearInterval(typeTimer);
     bubble.classList.add('show');
+    bubbleSr.textContent = text;
+    const visible = 4200 + text.length * 45;
+    wake(visible);
     if (REDUCED) bubbleText.textContent = text;
     else {
-      // el texto completo ocupa su espacio desde el inicio (invisible) → el globo no cambia de tamaño
+      // el texto completo reserva su espacio (invisible) → el globo no cambia de tamaño
       let i = 0;
-      bubbleText.innerHTML = '<span class="t"></span><span class="g" aria-hidden="true"></span>';
+      bubbleText.innerHTML = '<span class="t"></span><span class="g"></span>';
       const tEl = bubbleText.firstChild, gEl = bubbleText.lastChild;
       gEl.textContent = text;
       typeTimer = setInterval(() => {
-        i++; tEl.textContent = text.slice(0, i); gEl.textContent = text.slice(i);
+        i = Math.min(text.length, i + 2);
+        tEl.textContent = text.slice(0, i); gEl.textContent = text.slice(i);
         if (i >= text.length) clearInterval(typeTimer);
-      }, 24);
+      }, 40);
     }
-    hideTimer = setTimeout(() => bubble.classList.remove('show'), 4200 + text.length * 45);
+    hideTimer = setTimeout(() => bubble.classList.remove('show'), visible);
   }
   function hush() { clearTimeout(hideTimer); clearInterval(typeTimer); bubble.classList.remove('show'); }
 
   bubble.querySelector('.pixel-close').addEventListener('click', () => {
-    st.peek = true; store.set('pixel-peek', '1'); hush();
+    st.peek = true; store.set('pixel-peek', '1'); hush(); wake(1500);
   });
 
   let tapIdx = 0;
   hit.addEventListener('click', () => {
     if (st.peek) {
-      st.peek = false; store.set('pixel-peek', '0');
-      setTimeout(() => say('¡Volví! ¿Seguimos?'), 350);
+      st.peek = false; store.set('pixel-peek', '0'); wake();
+      setTimeout(() => say(EN ? 'I’m back! Shall we continue?' : '¡Volví! ¿Seguimos?'), 350);
       return;
     }
-    if (!REDUCED && st.jz === 0) st.jv = 520;
+    if (!REDUCED && !paused() && st.jz === 0) st.jv = 520;
     st.tapMoodUntil = performance.now() / 1000 + 1.6;
     say(TAPS[tapIdx++ % TAPS.length]);
   });
 
   // se emociona al pasar por un proyecto
   document.addEventListener('pointerover', e => {
-    if (e.target.closest && e.target.closest('.project-shot')) st.excitedUntil = performance.now() / 1000 + 1.4;
-  });
+    if (e.target.closest && e.target.closest('.project-shot')) { st.excitedUntil = performance.now() / 1000 + 1.4; wake(2500); }
+  }, { passive: true });
 
-  /* ---------- efectos ---------- */
-  function burst(x, y) {
-    if (REDUCED) return;
-    for (let i = 0; i < 80; i++) {
-      const a = -Math.PI / 2 + (Math.random() - .5) * 2.2, v = 300 + Math.random() * 520;
-      confetti.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 3 + Math.random() * 4, rot: Math.random() * 6, vr: (Math.random() - .5) * 12, c: CONFETTI[i % CONFETTI.length], life: 3 });
+  /* ---------- efectos: su canvas solo existe mientras hay partículas ---------- */
+  let fx = null, fctx = null;
+  function fxOn() {
+    if (!fx) {
+      fx = document.createElement('canvas');
+      fx.className = 'pixel-fx'; fx.setAttribute('aria-hidden', 'true');
+      fctx = fx.getContext('2d');
+      document.body.append(fx);
     }
+    if (fx.hidden || !fx.width) { fx.hidden = false; fx.width = W; fx.height = H; }
+  }
+  function fxOff() { if (fx && !fx.hidden) { fx.width = fx.height = 0; fx.hidden = true; } }
+  function burst(x, y) {
+    if (REDUCED || paused()) return;
+    fxOn();
+    const n = W < 640 ? 30 : 54;
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + (Math.random() - .5) * 2.2, v = 300 + Math.random() * 520;
+      confetti.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 3 + Math.random() * 4, rot: Math.random() * 6, vr: (Math.random() - .5) * 12, c: CONFETTI[i % CONFETTI.length], life: 2.6 });
+    }
+    wake(3000);
   }
   function puff(x, y) {
-    if (REDUCED) return;
-    for (let i = 0; i < 10; i++) dust.push({ x: x + (Math.random() - .5) * 60 * S, y, vx: (Math.random() - .5) * 120, vy: -Math.random() * 60, r: 3 + Math.random() * 5, life: .6 });
+    if (REDUCED || paused()) return;
+    fxOn();
+    for (let i = 0; i < 7; i++) dust.push({ x: x + (Math.random() - .5) * 60 * S, y, vx: (Math.random() - .5) * 120, vy: -Math.random() * 60, r: 3 + Math.random() * 5, life: .6 });
   }
 
-  /* ---------- sección activa ---------- */
-  let tops = [];
-  const measureSections = () => {
-    tops = SECTIONS.map(s => {
-      const el = document.querySelector(s.sel);
-      return el ? el.getBoundingClientRect().top + scrollY : Infinity;
-    });
-  };
-  let measureQueued = false;
-  const queueMeasure = () => {
-    if (measureQueued) return;
-    measureQueued = true;
-    requestAnimationFrame(() => { measureQueued = false; measureSections(); });
-  };
-  new ResizeObserver(queueMeasure).observe(document.body);
-  addEventListener('load', queueMeasure);
-  measureSections();
-  function activeSection() {
-    const line = scrollY + H * .55;
-    let idx = 0;
-    for (let i = 0; i < tops.length; i++) if (tops[i] <= line) idx = i;
-    return idx;
-  }
+  /* ---------- sección activa (sin medir el layout) ---------- */
+  const els = SECTIONS.map(s => document.querySelector(s.sel));
+  const crossing = new Set();
+  let activeIdx = 0;
+  const sectionIO = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      const i = els.indexOf(e.target);
+      if (e.isIntersecting) crossing.add(i); else crossing.delete(i);
+    }
+    if (crossing.size) activeIdx = Math.max(...crossing);
+    wake(3000);
+  }, { rootMargin: '-55% 0px -44% 0px' });
+  els.forEach(el => el && sectionIO.observe(el));
 
   /* ---------- dibujo de Pixel (coordenadas locales, mira a la derecha) ---------- */
   function rr(x, y, w, h, r) {
@@ -190,7 +238,7 @@
   }
   function drawPixel(t, o) {
     const { pose, mood } = o;
-    ctx.strokeStyle = C.lime; ctx.fillStyle = C.lime;
+    ctx.strokeStyle = C.line; ctx.fillStyle = C.line;
     ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 
     // piernas
@@ -223,13 +271,13 @@
 
     // cuerpo: ventana de navegador
     rr(-72, -125, 144, 118, 20); ctx.fillStyle = C.panel; ctx.fill();
-    ctx.lineWidth = 5; ctx.strokeStyle = C.lime; ctx.stroke();
+    ctx.lineWidth = 5; ctx.strokeStyle = C.line; ctx.stroke();
     ctx.fillStyle = C.panel2; rr(-69, -122, 138, 22, 17); ctx.fill();
     ['#ff6b5e', '#ffc93d', C.lime].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(-52 + i * 14, -111, 4.5, 0, 7); ctx.fill(); });
 
     // pantalla-cara
     rr(-58, -94, 116, 76, 12); ctx.fillStyle = C.lime; ctx.fill();
-    const blink = (t % 3.3) < .12;
+    const blink = o.sleep || (t % 3.3) < .12;
     const lx = o.look.x * 5, ly = o.look.y * 4;
     ctx.fillStyle = C.dark; ctx.strokeStyle = C.dark; ctx.lineWidth = 4;
     for (const s of [-1, 1]) {
@@ -259,16 +307,19 @@
       for (let i = 0; i < 6; i++) if (Math.sin(t * 18 + i * 2.1) > .4) ctx.fillRect(-44 + i * 15, -17, 9, 5);
     }
     // manos
-    ctx.fillStyle = C.lime;
+    ctx.fillStyle = C.line;
     for (const p of [L[1], R[1]]) { ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, 7); ctx.fill(); }
   }
 
   /* ---------- bucle ---------- */
-  let last = performance.now();
+  const placed = new Map();
+  function place(el, css) { if (placed.get(el) !== css) { placed.set(el, css); el.style.transform = css; } }
+
   function frame(now) {
+    raf = 0;
     const dt = Math.min(.05, (now - last) / 1000); last = now;
     const t = now / 1000;
-    if (dirty) ctx.clearRect(dirty.x, dirty.y, dirty.w, dirty.h);
+    if (!introStart) introStart = t;
 
     // velocidad de scroll → deslizarse / trepar
     const rawV = (scrollY - lastScroll) / Math.max(dt, .001);
@@ -278,15 +329,14 @@
     st.fall = REDUCED ? 0 : lerp(st.fall, clamp(sv / 1100, -1, 1), .15);
 
     // sección activa (se confirma tras 0.45 s para no hablar mientras pasa rápido)
-    const idx = activeSection();
-    if (idx !== pending) { pending = idx; pendingSince = t; }
+    if (activeIdx !== pending) { pending = activeIdx; pendingSince = t; }
     if (pending !== current && t - pendingSince > .45 && introDone) {
       current = pending;
-      const cfg = SECTIONS[current];
-      say(cfg.say);
-      if (cfg.party && !partied.has(current)) {
+      const c = SECTIONS[current];
+      say(c.say);
+      if (c.party && !partied.has(current)) {
         partied.add(current);
-        if (!REDUCED) st.jv = 560;
+        if (!REDUCED && !paused()) st.jv = 560;
         setTimeout(() => burst(st.x, H - 120 * S), 200);
       }
     }
@@ -295,8 +345,9 @@
     // caminar hacia su lugar
     const half = 100 * S;
     const tx = clamp(cfg.x * W, half + 10, W - half - 10);
-    const dx = tx - st.x;
-    if (REDUCED) st.x = tx;
+    let dx = tx - st.x;
+    if (paused()) { dx = 0; st.walking = false; }
+    else if (REDUCED || Math.abs(dx) < 1) { st.x = tx; dx = 0; st.walking = false; }
     else {
       const speed = clamp(dx * 3.2, -620, 620);
       st.x += speed * dt;
@@ -319,7 +370,8 @@
     st.squashV += (1 - st.squash) * 180 * dt; st.squashV *= Math.pow(.02, dt); st.squash += st.squashV * dt;
 
     // ocultar / asomarse
-    st.peekAmt = lerp(st.peekAmt, st.peek ? 1 : 0, REDUCED ? 1 : .12);
+    const peekTarget = st.peek ? 1 : 0;
+    st.peekAmt = lerp(st.peekAmt, peekTarget, REDUCED ? 1 : .12);
 
     // entrada: cae desde arriba
     let introY = 0;
@@ -329,89 +381,103 @@
       if (p >= 1) { introDone = true; puff(st.x, H - 14); }
     }
 
+    // ¿hay algo moviéndose?
+    const busy = !paused() && (!introDone || pending !== current || dx !== 0 || st.jz > 0 || st.jv !== 0
+      || (!REDUCED && (Math.abs(st.fall) > .015 || Math.abs(sv) > 5 || Math.abs(st.squash - 1) > .004 || Math.abs(st.squashV) > .02))
+      || Math.abs(st.peekAmt - peekTarget) > .004 || confetti.length > 0 || dust.length > 0);
+    const sleeping = paused() || (!busy && !REDUCED && performance.now() > awakeUntil);
+
     // pose y ánimo
     let pose = cfg.pose, mood = cfg.mood;
     if (st.fall > .35) pose = 'fall';
     else if (st.fall < -.35) pose = 'climb';
     else if (st.walking) pose = 'idle';
     if (t < st.excitedUntil || t < st.tapMoodUntil || st.jz > 0) mood = 'excited';
-    if (!introDone) { pose = 'fall'; }
+    if (!introDone) pose = 'fall';
+    if (sleeping) { pose = 'idle'; mood = 'happy'; }
 
     // hacia dónde mira (ojos siguen al cursor)
     const groundY = H - 16;
-    const bob = st.walking ? -Math.abs(Math.sin(st.walk)) * 5 : Math.sin(t * 3) * 3;
+    const bob = st.walking ? -Math.abs(Math.sin(st.walk)) * 5 : sleeping ? 0 : Math.sin(t * 3) * 3;
     const lift = Math.max(0, st.fall) * 26 * S * (1 + Math.sin(t * 6) * .15);
     const sink = st.peekAmt * 105 * S;
     const baseY = groundY - 20 * S - st.jz + introY - lift + sink + bob * S;
-    const faceX = st.x, faceY = baseY - 56 * S;
-    const look = {
-      x: clamp((mouse.x - faceX) / 260, -1, 1) * st.facing,
-      y: clamp((mouse.y - faceY) / 260, -1, 1),
+    const look = sleeping ? { x: 0, y: 0 } : {
+      x: clamp((mouse.x - st.x) / 260, -1, 1) * st.facing,
+      y: clamp((mouse.y - (baseY - 56 * S)) / 260, -1, 1),
     };
 
-    // sombra
+    // sombra (elemento CSS)
     const shadowK = clamp(1 - (st.jz + lift) / (160 * S), .3, 1);
-    ctx.fillStyle = `rgba(0,0,0,${.4 * shadowK * (1 - st.peekAmt)})`;
-    ctx.beginPath(); ctx.ellipse(st.x, groundY + 4, 55 * S * shadowK, 9 * S * shadowK, 0, 0, 7); ctx.fill();
+    place(shadow, `translate3d(${(st.x - 55 * S).toFixed(1)}px,${(groundY + 4 - 9 * S).toFixed(1)}px,0) scale(${shadowK.toFixed(2)})`);
+    const op = (shadowK * (1 - st.peekAmt)).toFixed(2);
+    if (placed.get('op') !== op) { placed.set('op', op); shadow.style.opacity = op; }
 
-    // Pixel
-    ctx.save();
-    ctx.translate(st.x, baseY);
-    const tilt = st.walking ? Math.sin(st.walk) * .04 : st.fall * .08 * Math.sin(t * 5);
-    ctx.rotate(tilt);
-    ctx.scale(S * st.facing * (2 - st.squash), S * st.squash);
-    drawPixel(t, { pose, mood, walk: st.walk, walking: st.walking, look });
-    ctx.restore();
+    // Pixel (dibujado en su sprite, movido con transform)
+    place(cv, `translate3d(${(st.x - SPRITE.ox * S).toFixed(1)}px,${(baseY - SPRITE.oy * S).toFixed(1)}px,0)`);
+    const k = D * S;
+    ctx.setTransform(k, 0, 0, k, SPRITE.ox * k, SPRITE.oy * k);
+    ctx.clearRect(-SPRITE.ox, -SPRITE.oy, SPRITE.w, SPRITE.h);
+    ctx.rotate(st.walking ? Math.sin(st.walk) * .04 : st.fall * .08 * Math.sin(t * 5));
+    ctx.scale(st.facing * (2 - st.squash), st.squash);
+    drawPixel(t, { pose, mood, walk: st.walk, walking: st.walking, look, sleep: sleeping });
 
     // globo de pensamiento
     if (pose === 'think' && !st.peek) {
+      ctx.setTransform(k, 0, 0, k, SPRITE.ox * k, SPRITE.oy * k);
       ctx.fillStyle = 'rgba(240,237,230,.85)';
       for (let i = 0; i < 3; i++) {
-        const k = (Math.sin(t * 3 - i) + 1) / 2;
-        ctx.beginPath(); ctx.arc(st.x + st.facing * (40 + i * 16) * S, baseY - (140 + i * 22) * S, (3 + i * 2) * S * (.8 + k * .4), 0, 7); ctx.fill();
+        const b = (Math.sin(t * 3 - i) + 1) / 2;
+        ctx.beginPath(); ctx.arc(st.facing * (40 + i * 16), -(140 + i * 22), (3 + i * 2) * (.8 + b * .4), 0, 7); ctx.fill();
       }
     }
 
-    // polvo
-    dust = dust.filter(d => (d.life -= dt) > 0);
-    dust.forEach(d => {
-      d.x += d.vx * dt; d.y += d.vy * dt;
-      ctx.fillStyle = `rgba(240,237,230,${d.life * .35})`;
-      ctx.beginPath(); ctx.arc(d.x, d.y, d.r * (1.6 - d.life), 0, 7); ctx.fill();
-    });
-    // confeti
-    confetti = confetti.filter(c => (c.life -= dt) > 0 && c.y < H + 40);
-    confetti.forEach(c => {
-      c.vy += 900 * dt; c.vx *= .99; c.x += c.vx * dt; c.y += c.vy * dt; c.rot += c.vr * dt;
-      ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot);
-      ctx.globalAlpha = Math.min(1, c.life);
-      ctx.fillStyle = c.c; ctx.fillRect(-c.r, -c.r / 2, c.r * 2, c.r);
-      ctx.restore();
-    });
-    ctx.globalAlpha = 1;
-
-    // zona a borrar en el próximo cuadro
-    if (confetti.length || dust.length || !introDone) dirty = { x: 0, y: 0, w: W, h: H };
-    else {
-      const pad = 150 * S + 24, y0 = Math.max(0, baseY - 260 * S);
-      dirty = { x: st.x - pad, y: y0, w: pad * 2, h: H - y0 };
+    // partículas
+    if (confetti.length || dust.length) {
+      fctx.clearRect(0, 0, W, H);
+      dust = dust.filter(d => (d.life -= dt) > 0);
+      for (const d of dust) {
+        d.x += d.vx * dt; d.y += d.vy * dt;
+        fctx.fillStyle = `rgba(${C.dust},${d.life * .35})`;
+        fctx.beginPath(); fctx.arc(d.x, d.y, d.r * (1.6 - d.life), 0, 7); fctx.fill();
+      }
+      confetti = confetti.filter(c => (c.life -= dt) > 0 && c.y < H + 40);
+      for (const c of confetti) {
+        c.vy += 900 * dt; c.vx *= .99; c.x += c.vx * dt; c.y += c.vy * dt; c.rot += c.vr * dt;
+        fctx.save(); fctx.translate(c.x, c.y); fctx.rotate(c.rot);
+        fctx.globalAlpha = Math.min(1, c.life);
+        fctx.fillStyle = c.c; fctx.fillRect(-c.r, -c.r / 2, c.r * 2, c.r);
+        fctx.restore();
+      }
+      if (!confetti.length && !dust.length) fxOff();
     }
 
     // zona clicable y globo siguen a Pixel
     const top = baseY - 135 * S, hw = 90 * S;
-    hit.style.transform = `translate(${st.x - hw}px,${top}px)`;
-    hit.style.width = `${hw * 2}px`;
-    hit.style.height = `${Math.max(24, (groundY - top) - (st.peek ? sink : 0))}px`;
+    place(hit, `translate3d(${(st.x - hw).toFixed(1)}px,${top.toFixed(1)}px,0)`);
+    const hh = `${Math.max(24, (groundY - top) - (st.peek ? sink : 0)).toFixed(0)}px`;
+    if (placed.get('hh') !== hh) { placed.set('hh', hh); hit.style.height = hh; }
     if (bubble.classList.contains('show')) {
       const bw = bubbleSize.w, bh = bubbleSize.h;
       const left = clamp(st.x - bw / 2, 12, W - bw - 12);
-      bubble.style.transform = `translate(${left}px,${top - bh - 14}px)`;
-      bubble.style.setProperty('--tail', `${clamp(st.x - left, 18, bw - 18)}px`);
+      place(bubble, `translate3d(${left.toFixed(1)}px,${(top - bh - 14).toFixed(1)}px,0)`);
+      const tail = `${clamp(st.x - left, 18, bw - 18).toFixed(0)}px`;
+      if (placed.get('tail') !== tail) { placed.set('tail', tail); bubble.style.setProperty('--tail', tail); }
     }
 
-    requestAnimationFrame(frame);
+    // siguiente cuadro
+    if (busy) raf = requestAnimationFrame(frame);
+    else if (sleeping || REDUCED) asleep = true;
+    else idleTimer = setTimeout(() => { idleTimer = 0; raf = requestAnimationFrame(frame); }, IDLE_MS);
   }
 
-  // arranque: cae desde arriba; el saludo lo dispara el bucle al aterrizar
-  requestAnimationFrame(t => { last = t; introStart = t / 1000; frame(t); });
+  // arranque
+  addEventListener('themechange', () => { inkTheme(); wake(1500); });
+  addEventListener('motionchange', e => {
+    if (e.detail) { confetti = []; dust = []; fxOff(); st.jz = st.jv = st.squashV = st.fall = sv = 0; st.squash = 1; }
+    wake(3000);
+  });
+  addEventListener('resize', resize, { passive: true });
+  last = performance.now();
+  resize();
 })();
