@@ -1,0 +1,16 @@
+{
+  "name": "miguel-posada-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portafolio de Miguel Posada — miguelposada.dev",
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 5173",
+    "build": "node build.mjs",
+    "preview": "node serve.mjs dist 4173",
+    "videos": "node video/build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12"
+  }
+}

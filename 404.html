@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Página no encontrada — Miguel Posada</title>
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0b0c09">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<style>
+@font-face{font-family: 'Archivo'; font-style: normal; font-weight: 400 800; font-stretch: 75% 110%; font-display: swap; src:url(/fonts/archivo-latin.woff2) format('woff2'); unicode-range: U+0020-007E, U+00A0-00FF, U+00D7, U+2013-2014, U+2018-201D, U+2022, U+2026, U+20AC, U+2190-2193, U+2197;}
+@font-face{font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400 600; font-display: swap; src:url(/fonts/jetbrains-mono-latin.woff2) format('woff2'); unicode-range: U+0020-007E, U+00A0-00FF, U+00D7, U+2013-2014, U+2018-201D, U+2022, U+2026, U+20AC, U+2190-2193, U+2197;}
+
+  :root{--bg:#0b0c09;--lime:#cbff00;--cream:#f0ede6;--dim:#b3b0a8}
+  *{box-sizing:border-box;margin:0}
+  body{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--bg);color:var(--cream);font-family:Archivo,system-ui,sans-serif;
+    background-image:linear-gradient(rgba(240,237,230,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(240,237,230,.04) 1px,transparent 1px);background-size:64px 64px}
+  main{max-width:560px;text-align:center}
+  canvas{width:200px;height:200px}
+  .code{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;color:var(--lime)}
+  h1{margin-top:10px;font-weight:800;font-stretch:80%;font-size:clamp(34px,7vw,56px);line-height:1;color:var(--lime)}
+  p{margin-top:14px;color:var(--dim);line-height:1.6}
+  a{display:inline-flex;margin-top:26px;padding:12px 22px;background:var(--lime);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none}
+  a:hover{background:var(--cream)}
+</style>
+</head>
+<body>
+<main>
+  <canvas id="c" width="400" height="400" aria-hidden="true"></canvas>
+  <p class="code">ERROR 404</p>
+  <h1>ESTA PÁGINA SE PERDIÓ.</h1>
+  <p>Pixel buscó por todas partes y no la encontró. Vuelve al inicio para ver los proyectos y servicios de Miguel.</p>
+  <a href="/">Volver al inicio →</a>
+</main>
+<script>
+// Pixel confundido
+(() => {
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  const L = '#cbff00', D = '#0b0c09';
+  const rr = (x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function draw(t) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, 400, 400);
+    const bob = still ? 0 : Math.sin(t * 3) * 6;
+    ctx.translate(200, 300 + bob); ctx.scale(1.5, 1.5);
+    ctx.strokeStyle = L; ctx.fillStyle = L; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(-24, -8); ctx.lineTo(-24, 12); ctx.moveTo(24, -8); ctx.lineTo(24, 12); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(-28, 14, 12, 6, 0, 0, 7); ctx.fill(); ctx.beginPath(); ctx.ellipse(28, 14, 12, 6, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-70, -60); ctx.quadraticCurveTo(-92, -45, -86, -24); ctx.moveTo(70, -60); ctx.quadraticCurveTo(98, -26, 46, -12); ctx.stroke();
+    rr(-72, -125, 144, 118, 20); ctx.fillStyle = '#131410'; ctx.fill(); ctx.lineWidth = 5; ctx.stroke();
+    ctx.fillStyle = '#1f2119'; rr(-69, -122, 138, 22, 17); ctx.fill();
+    ['#ff6b5e', '#ffc93d', L].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(-52 + i * 14, -111, 4.5, 0, 7); ctx.fill(); });
+    rr(-58, -94, 116, 76, 12); ctx.fillStyle = L; ctx.fill();
+    const look = still ? 0 : Math.sin(t * 1.2) * 6;
+    ctx.fillStyle = D;
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 22 + look, -64, 8, 10, 0, 0, 7); ctx.fill(); }
+    ctx.beginPath(); ctx.ellipse(look * .5, -38, 5, 6, 0, 0, 7); ctx.fill();
+    ctx.font = '800 40px Archivo, sans-serif'; ctx.fillStyle = L; ctx.textAlign = 'center';
+    ctx.fillText('?', 95, -135 + (still ? 0 : Math.sin(t * 4) * 5));
+    if (!still) requestAnimationFrame(n => draw(n / 1000));
+  }
+  draw(0);
+})();
+</script>
+</body>
+</html>

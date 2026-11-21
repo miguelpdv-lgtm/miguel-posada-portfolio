@@ -1,0 +1,71 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-20T14:33:27.279Z",
+        "reason": "Claude: cromo decorativo de navegador/editor (shot-bar, mb-bar, ide), canvas absoluto dentro de cta-panel y filas separadas por divisores (service, cta-list); el relleno existe donde hay caja"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-20T14:33:27.653Z",
+        "reason": "Claude: los h2 son las etiquetas mono de sección del mockup de referencia (se volvieron h2 por SEO); la jerarquía visual la dan los títulos grandes"
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-20T14:33:27.779Z",
+        "reason": "Claude: resplandor neón lima del concepto de plano técnico que el usuario aprobó ('me gusta el concepto')"
+      },
+      {
+        "rule": "oversized-h1",
+        "value": "*",
+        "files": [
+          "cotizaciones/cotizacion-consultora.html"
+        ],
+        "createdAt": "2026-11-20T14:33:27.916Z",
+        "reason": "Claude: borrador de cotización descartado (el usuario pidió solo el mensaje de WhatsApp); 48000px es una lectura errónea de unidades pt"
+      },
+      {
+        "rule": "hero-eyebrow-chip",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-20T14:33:32.780Z",
+        "reason": "Claude: numeración de secciones 01–07 tomada del mockup de referencia que entregó el usuario"
+      },
+      {
+        "rule": "hero-eyebrow-chip",
+        "value": "*",
+        "files": [
+          "404.html"
+        ],
+        "createdAt": "2026-11-20T14:33:32.893Z",
+        "reason": "Claude: código de error funcional en la página 404, no un eyebrow decorativo"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "404.html"
+        ],
+        "createdAt": "2026-11-20T14:33:45.754Z",
+        "reason": "Claude: la 404 replica la cuadrícula de plano técnico del sitio (concepto blueprint, excepción que la propia regla permite)"
+      }
+    ]
+  }
+}
