@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /404.html
 
-Sitemap: https://miguelposada.dev/sitemap.xml
+Sitemap: https://www.miguelposada.dev/sitemap.xml

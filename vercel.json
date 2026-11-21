@@ -4,19 +4,6 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": true,
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.miguelposada.dev"
-        }
-      ],
-      "destination": "https://miguelposada.dev/:path*",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",

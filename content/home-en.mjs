@@ -5,8 +5,8 @@ export const HOME_PAIRS = [
   ['<title>Diseño de Páginas Web en Colombia | Miguel Posada</title>', '<title>Web Design &amp; Development | Miguel Posada</title>'],
   ['content="Diseño de páginas web, tiendas online y landing pages rápidas y optimizadas para Google. Desde Barranquilla para clientes en todo el mundo."', 'content="Fast, custom websites, online stores and landing pages optimized for Google. Systems Engineer in Colombia working with clients worldwide."'],
   ['<meta property="og:locale" content="es_CO">', '<meta property="og:locale" content="en_US">'],
-  ['<meta property="og:url" content="https://miguelposada.dev/">', '<meta property="og:url" content="https://miguelposada.dev/en/">'],
-  ['<link rel="canonical" href="https://miguelposada.dev/">', '<link rel="canonical" href="https://miguelposada.dev/en/">'],
+  ['<meta property="og:url" content="https://www.miguelposada.dev/">', '<meta property="og:url" content="https://www.miguelposada.dev/en/">'],
+  ['<link rel="canonical" href="https://www.miguelposada.dev/">', '<link rel="canonical" href="https://www.miguelposada.dev/en/">'],
   ['content="Diseño de Páginas Web en Colombia | Miguel Posada"', 'content="Web Design &amp; Development | Miguel Posada"'],
   ['content="Sitios web, tiendas online y web apps que trabajan tan duro como tu negocio. Rápidos, modernos y optimizados para Google."', 'content="Websites, online stores and web apps that work as hard as your business. Fast, modern and optimized for Google."'],
   ['content="Sitios web, tiendas online y web apps que trabajan tan duro como tu negocio."', 'content="Websites, online stores and web apps that work as hard as your business."'],
@@ -145,11 +145,11 @@ export function homeToEnglish(source, assertPair) {
           ['Website design', 'web-design-barranquilla', 'Fast, custom business websites optimized for Google.'],
           ['Landing pages', 'landing-pages', 'Landing pages focused on turning visits into WhatsApp messages.'],
           ['Online stores (E-commerce)', 'online-stores', 'Stores integrated with payment gateways like Wompi and Bold, with inventory management.'],
-        ].map(([name, s, description]) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, url: `https://miguelposada.dev/en/${s}/`, description } })) };
+        ].map(([name, s, description]) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, url: `https://www.miguelposada.dev/en/${s}/`, description } })) };
       }
       if (n['@type'] === 'ItemList') n.name = 'Selected projects';
       if (n['@type'] === 'FAQPage') {
-        n['@id'] = 'https://miguelposada.dev/en/#faq';
+        n['@id'] = 'https://www.miguelposada.dev/en/#faq';
         n.mainEntity = HOME_FAQ_EN.map(([q, x]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: x.replace(/<[^>]+>/g, '') } }));
       }
     }

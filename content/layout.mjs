@@ -1,5 +1,5 @@
 // Plantilla compartida de las páginas internas en español e inglés (la portada es index.html).
-export const SITE = 'https://miguelposada.dev';
+export const SITE = 'https://www.miguelposada.dev';
 export const WA = '573003117197';
 export const waLink = msg => `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
 
