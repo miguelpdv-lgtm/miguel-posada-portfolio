@@ -66,5 +66,12 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/surtidores",
+      "destination": "/demo/",
+      "permanent": false
+    }
   ]
 }
