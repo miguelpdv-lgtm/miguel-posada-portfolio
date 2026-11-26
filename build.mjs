@@ -7,6 +7,7 @@ import { transform } from 'esbuild';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { CAMPAIGN_PAGES } from './content/campaign-pages.mjs';
 import { PAGES } from './content/pages.mjs';
 import { PAGES_EN } from './content/pages-en.mjs';
 import { homeToEnglish } from './content/home-en.mjs';
@@ -69,6 +70,14 @@ for (const pg of [...PAGES, ...PAGES_EN]) {
   writeFileSync(file, minifyHtml(addUsd(withPixel(renderPage(pg, { css, jsName, gaSnippet, bootJs })))));
 }
 
+// ---------- campaign landing pages ----------
+for (const pg of CAMPAIGN_PAGES) {
+  const file = join(OUT, pg.slug, 'index.html');
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, pg.html.replace('</head>', gaSnippet + '\n</head>'));
+}
+for (const f of ['campaign.css', 'campaign.js']) cpSync(f, join(OUT, f));
+
 // ---------- sitemap.xml (generado) ----------
 const today = new Date().toISOString().slice(0, 10);
 const img = (f, t) => `<image:image><image:loc>${SITE}/assets/${f}</image:loc><image:title>${t}</image:title></image:image>`;
@@ -77,6 +86,7 @@ const homeImgs = `${img('ratio.webp', 'Ratio Coffee Baq')}${img('ema.webp', 'Ema
 const urls = [
   `<url><loc>${SITE}/</loc><lastmod>${today}</lastmod><priority>1.0</priority>${alts('/', '/en/')}${homeImgs}</url>`,
   `<url><loc>${SITE}/en/</loc><lastmod>${today}</lastmod><priority>0.9</priority>${alts('/', '/en/')}</url>`,
+  ...CAMPAIGN_PAGES.map(pg => `<url><loc>${SITE}/${pg.slug}/</loc><lastmod>${today}</lastmod></url>`),
   ...Object.keys(SLUGS).flatMap(s => {
     const es = `/${s}/`, en = enPath(s), pr = s.startsWith('blog/') ? '0.6' : '0.8';
     return [es, en].map(u => `<url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod><priority>${pr}</priority>${alts(es, en)}</url>`);
@@ -114,6 +124,6 @@ for (const f of walk(OUT).filter(p => p.endsWith('.html'))) {
   }
 }
 if (broken.length) throw new Error('Enlaces internos rotos:\n' + [...new Set(broken)].join('\n'));
-const noPixel = walk(OUT).filter(p => p.endsWith('index.html') && !read(p).includes(`data-pixel="/${pixelName}"`));
+const noPixel = walk(OUT).filter(p => p.endsWith('index.html') && !CAMPAIGN_PAGES.some(pg => p === join(OUT, pg.slug, 'index.html')) && !read(p).includes(`data-pixel="/${pixelName}"`));
 if (noPixel.length) throw new Error('Páginas sin Pixel:\n' + noPixel.join('\n'));
 console.log(`${PAGES.length + PAGES_EN.length + 2} páginas (ES + EN) + sitemap con ${urls.length} URL · sin enlaces rotos`);
