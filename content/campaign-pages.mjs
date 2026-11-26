@@ -62,6 +62,7 @@ export const CAMPAIGN_PAGES = Object.entries(config).map(([slug, x]) => ({
 <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <title>${escape(x.title)}</title>
 <link rel="stylesheet" href="/campaign.css">
+<script>!function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f);}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");oaiq("init",{pixelId:"McVWcUNL32oFdfMxLG4brg",debug:false});</script>
 </head>
 <body>
 <header class="nav"><a href="/" class="brand"><img src="/assets/logo-mark.webp" alt="" width="34" height="34"><span>miguel<span class="lime">posada</span>.dev</span></a><a href="#demo" class="nav-cta">Solicitar demo <span aria-hidden="true">↗</span></a></header>
