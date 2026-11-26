@@ -1,50 +1,53 @@
-// Landing pages enfocadas en prospectos de ChatGPT Ads.
-// Pixel oficial de OpenAI Ads con consentimiento opcional.
+// Landing pages: real portfolio evidence, independent developer, existing Ads measurement.
 const config = {
   salones: {
-    title: 'Páginas web para salones de cabello rizado | Miguel Posada',
-    description: 'Crea una web a medida para tu salón de rizos: reservas, catálogo y tienda online. Solicita una demo gratis antes de pagar.',
-    category: 'Salones de cabello rizado',
-    eyebrow: 'PARA SALONES DE RIZOS · WEB A MEDIDA',
-    heading: 'TU SALÓN MERECE UNA WEB QUE <em>TRABAJE POR TI.</em>',
-    summary: 'Tus clientas buscan tratamientos, citas y productos. Muéstrales todo en un solo lugar con una web diseñada para tu salón.',
+    title: 'Páginas web para salones de rizos | Miguel Posada',
+    description: 'Diseño tiendas online y webs para salones de cabello rizado. Conoce Ema Rizos, AmicrespA y Marea Rizada. Solicita una demo gratis.',
+    eyebrow: 'DISEÑO WEB PARA SALONES DE RIZOS',
+    heading: 'Tu salón tiene identidad. <em>Tu web también debería.</em>',
+    summary: 'Diseño páginas web para salones especializados en cabello rizado, crespo y afro: reservas, tiendas online y experiencias de compra pensadas para tus clientas.',
+    proofLine: '2 proyectos en producción · 1 en desarrollo',
+    workHeading: 'Ya conozco tu sector.',
+    workIntro: 'No tienes que imaginar cómo sería trabajar conmigo. Estas son páginas que he desarrollado para negocios de cabello rizado, cada una con su propia identidad.',
     features: [
-      ['01 / CITAS', 'Haz que reservar sea sencillo', 'Una experiencia clara para mostrar servicios y conectar con tu sistema de agenda.'],
-      ['02 / VENTAS', 'Lleva tus productos a internet', 'Catálogo o tienda online para tus líneas de cuidado capilar y rutinas.'],
-      ['03 / MARCA', 'Una identidad propia', 'Diseño que refleje el estilo de tu salón; no una plantilla genérica.']
+      ['01', 'Más fácil reservar', 'Presenta tus servicios y conecta tu agenda para que tus clientas encuentren cómo reservar sin depender de mensajes de ida y vuelta.'],
+      ['02', 'Vende tus productos online', 'Crea una tienda con catálogo, pagos y recomendaciones adaptadas a las necesidades de cada tipo de cabello.'],
+      ['03', 'Haz visible tu especialidad', 'Comunica tu enfoque, técnicas, equipo y tratamientos con un diseño que represente tu salón.']
     ],
-    proof: 'EXPERIENCIA REAL EN EL SECTOR',
-    proofTitle: 'Ya he trabajado con una tienda para cabello rizado.',
-    proofText: 'En Ema Rizos desarrollé una experiencia de compra personalizada con recomendaciones capilares. Puedes conocer el proyecto en mi portafolio.',
-    proofHref: '/proyectos/',
-    proofLink: 'Ver proyectos',
+    projects: [
+      {name:'Ema Rizos', image:'ema', domain:'emarizos.co', url:'https://emarizos.co', color:'#e0689a', type:'Tienda online + reservas', desc:'Tienda y reservas para un salón especialista en rizos, crespos y afros, con recomendaciones capilares, catálogo y agenda integrada.', tags:['AgendaPro','E-commerce','Pagos en línea'], height:578},
+      {name:'AmicrespA', image:'ami', domain:'amicrespa.com', url:'https://amicrespa.com', color:'#f2cf5b', type:'Salón + tienda', desc:'Experiencia digital para un salón con sedes en Barranquilla y Cali, con servicios, tienda, recomendación personalizada y citas.', tags:['Diagnóstico capilar','Agenda','Tienda online'], height:578},
+      {name:'Marea Rizada', image:'marea', domain:'En desarrollo', color:'#6fd6d6', type:'Salón de rizos', desc:'Proyecto en desarrollo para un salón especializado en corte rizo a rizo, diagnóstico y rutinas para patrones del 2A al 4C.', tags:['Servicios','Diagnóstico','En desarrollo'], height:589}
+    ],
     options: ['Reservas de citas', 'Tienda online', 'Reservas y tienda', 'Otra necesidad'],
     whatsapp: 'Hola Miguel, tengo un salón de cabello rizado y quiero una demo de mi página web.',
     niche: 'salones'
   },
   surtidores: {
-    title: 'Páginas web y catálogos para surtidores | Miguel Posada',
-    description: 'Digitaliza tu distribuidora con catálogo, solicitudes de pedidos y soluciones web personalizadas. Solicita una demo gratuita.',
-    category: 'Surtidores y distribuidores',
-    eyebrow: 'PARA SURTIDORES · CATÁLOGOS Y PEDIDOS',
-    heading: 'DEJA QUE TUS CLIENTES <em>ENCUENTREN Y PIDAN</em> MÁS FÁCIL.',
-    summary: 'Si vendes productos al por mayor, un catálogo digital claro puede ayudar a tus compradores a consultar referencias y solicitar pedidos.',
+    title: 'Páginas web para surtidores y distribuidores | Miguel Posada',
+    description: 'Diseño catálogos digitales y tiendas online para surtidores y distribuidores. Conoce Lusarte, tienda de insumos para velas. Solicita una demo gratis.',
+    eyebrow: 'DISEÑO WEB PARA SURTIDORES Y DISTRIBUIDORES',
+    heading: 'Tu catálogo, listo para <em>recibir pedidos online.</em>',
+    summary: 'Diseño tiendas y catálogos digitales para negocios que venden insumos y productos. Organiza tus referencias, facilita los pedidos y ofrece una experiencia de compra a la medida de tu operación.',
+    proofLine: 'Caso real en producción · Lusarte',
+    workHeading: 'Así se ve un surtidor online.',
+    workIntro: 'Lusarte es un ejemplo real de cómo presentar un catálogo especializado de insumos y facilitar la compra desde una tienda online.',
     features: [
-      ['01 / CATÁLOGO', 'Tus productos, siempre visibles', 'Organiza referencias, categorías y presentaciones para que tus clientes consulten desde el celular.'],
-      ['02 / PEDIDOS', 'Menos mensajes desordenados', 'Centraliza solicitudes de pedido en un flujo diseñado alrededor de tu operación.'],
-      ['03 / CONTROL', 'Crece sin perder claridad', 'Podemos evaluar inventario, cuentas empresariales e integraciones según tus necesidades.']
+      ['01', 'Un catálogo que se entiende', 'Organiza referencias, categorías, formatos y presentaciones para que tus clientes encuentren lo que buscan.'],
+      ['02', 'Pedidos sin tanta conversación', 'Permite que tus compradores armen su pedido y elijan cómo comprar, según tu modelo comercial.'],
+      ['03', 'Una web que se adapta a ti', 'Podemos evaluar inventario, precios mayoristas, cotizaciones, pagos e integraciones según tu operación.']
     ],
-    proof: 'SOLUCIONES A LA MEDIDA',
-    proofTitle: 'La web se adapta a tu forma de vender.',
-    proofText: 'No necesitas adoptar una tienda genérica. Primero revisamos cómo cotizas, recibes pedidos y despachas; luego definimos qué automatizar.',
-    proofHref: '/proyectos/',
-    proofLink: 'Conoce mi trabajo',
+    projects: [
+      {name:'Lusarte', image:'lusarte', domain:'lusarte.net', url:'https://lusarte.net', color:'#c9a7e0', type:'Tienda de insumos para velas', desc:'E-commerce de ceras, parafinas, fragancias, moldes y recipientes, además de velas artesanales. Con domicilio local en Barranquilla y envíos a toda Colombia.', tags:['Catálogo especializado','Pagos en línea','Envíos nacionales'], height:571}
+    ],
     options: ['Catálogo digital', 'Pedidos online', 'Inventario e integraciones', 'Otra necesidad'],
     whatsapp: 'Hola Miguel, tengo una distribuidora y quiero una demo de catálogo y pedidos.',
     niche: 'surtidores'
   }
 };
 const escape = s => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+const shot = (p, eager = false) => `<div class="browser" style="--project:${p.color}"><div class="browser-bar"><span class="browser-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>${escape(p.domain)}</span><span aria-hidden="true">↗</span></div><img src="/assets/${p.image}-800.webp" srcset="/assets/${p.image}-480.webp 480w, /assets/${p.image}-800.webp 800w, /assets/${p.image}.webp 1200w" sizes="(max-width: 680px) 90vw, (max-width: 1000px) 48vw, 650px" width="1200" height="${p.height}" alt="Captura del sitio ${escape(p.name)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`;
+const card = p => `<article class="case-card" style="--project:${p.color}">${p.url ? `<a class="case-shot" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="Visitar ${escape(p.name)}">${shot(p)}</a>` : shot(p)}<div class="case-info"><div class="case-status"><span class="status-dot"></span>${p.url ? 'En producción' : 'En desarrollo'}</div><h3>${escape(p.name)}</h3><span class="case-type">${escape(p.type)}</span><p>${escape(p.desc)}</p><div class="tags">${p.tags.map(t=>`<span>${escape(t)}</span>`).join('')}</div>${p.url ? `<a class="case-link" href="${p.url}" target="_blank" rel="noopener noreferrer">Visitar sitio <span aria-hidden="true">↗</span></a>` : '<span class="case-link muted">Próximamente</span>'}</div></article>`;
 export const CAMPAIGN_PAGES = Object.entries(config).map(([slug, x]) => ({
   slug,
   title: x.title,
@@ -65,32 +68,24 @@ export const CAMPAIGN_PAGES = Object.entries(config).map(([slug, x]) => ({
 <script>!function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f);}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");oaiq("consent",false);oaiq("init",{pixelId:"McVWcUNL32oFdfMxLG4brg",debug:false});</script>
 </head>
 <body>
-<header class="nav"><a href="/" class="brand"><img src="/assets/logo-mark.webp" alt="" width="34" height="34"><span>miguel<span class="lime">posada</span>.dev</span></a><a href="#demo" class="nav-cta">Solicitar demo <span aria-hidden="true">↗</span></a></header>
+<header class="nav shell"><a href="/" class="brand" aria-label="Miguel Posada, portafolio"><img src="/assets/logo-mark.webp" alt="" width="34" height="34"><span>miguel<span class="lime">posada</span>.dev</span></a><nav aria-label="Navegación"><a class="nav-work" href="#proyectos">Proyectos</a><a href="#demo" class="nav-cta">Demo gratis <span aria-hidden="true">↗</span></a></nav></header>
 <main>
-<section class="hero shell">
-<div class="hero-copy"><div class="eyebrow"><span class="dot"></span>${x.eyebrow}</div>
-<h1>${x.heading}</h1>
-<p class="lead">${x.summary}</p>
-<div class="actions"><a href="#demo" class="cta">Quiero ver mi demo gratis <span aria-hidden="true">↗</span></a><a href="#solucion" class="link">Ver qué puedo desarrollar ↓</a></div>
-<div class="assurance"><span>Demo gratis antes de pagar</span><span>Trato directo conmigo</span><span>Diseño a medida</span></div>
-</div>
-<div class="hero-art" role="img" aria-label="Vista de ${escape(x.category)} y herramientas digitales"><div class="art-frame"><span class="frame-label">/ ${slug} · DIGITAL EXPERIENCE</span><div class="art-icon">${slug === 'salones' ? '✳' : '▦'}</div><span class="frame-bottom">HECHO PARA TU NEGOCIO <b>↗</b></span></div></div>
-</section>
-<section id="solucion" class="section shell"><p class="section-label">01 — EL PROBLEMA, RESUELTO</p><h2>Una web pensada para <span class="lime">${escape(x.category.toLowerCase())}.</span></h2><div class="features">${x.features.map(([tag,title,desc])=>`<article><span class="feature-tag">${escape(tag)}</span><h3>${escape(title)}</h3><p>${escape(desc)}</p></article>`).join('')}</div></section>
-<section class="proof shell"><div><p class="section-label">${x.proof}</p><h2>${x.proofTitle}</h2><p>${x.proofText}</p><a class="text-link" href="${x.proofHref}">${x.proofLink} ↗</a></div><div class="proof-panel"><span>DESARROLLO WEB SIN INTERMEDIARIOS</span><strong>01 <i>/</i> 01</strong><p>Hablas con la persona que diseña y desarrolla tu proyecto.</p></div></section>
-<section id="demo" class="section shell demo"><div class="demo-copy"><p class="section-label">02 — SIGUIENTE PASO</p><h2>CUÉNTAME TU IDEA. <span class="lime">TE MUESTRO UNA DEMO.</span></h2><p>Solo necesito algunos datos para entender tu negocio. La demo es gratuita y no te compromete a contratar.</p><div class="demo-steps"><span>01. Me cuentas qué necesitas</span><span>02. Revisamos tu caso</span><span>03. Te propongo una demo</span></div></div>
+<section class="hero shell"><div class="hero-copy"><p class="eyebrow"><span class="dot"></span>${x.eyebrow}</p><h1>${x.heading}</h1><p class="lead">${x.summary}</p><div class="actions"><a href="#demo" class="cta">Quiero mi demo gratis <span aria-hidden="true">↗</span></a><a href="#proyectos" class="link">Ver proyectos <span aria-hidden="true">↓</span></a></div><p class="assurance">Demo antes de pagar <span>·</span> Trato directo conmigo</p></div><div class="hero-visual ${slug === "salones" ? "salon-mosaic" : "supplier-showcase"}"><div class="visual-top"><span><i class="status-dot"></i> PORTAFOLIO REAL</span><span>${slug === "salones" ? "01 — 03" : "01 — 01"}</span></div><div class="visual-main">${shot(x.projects[0], true)}<div class="visual-caption"><strong>${x.projects[0].name}</strong><span>${x.projects[0].type}</span></div></div>${slug === "salones" ? `<div class="visual-pair">${x.projects.slice(1).map(p=>`<div>${shot(p,true)}<div class="visual-caption"><strong>${p.name}</strong><span>${p.url ? "En producción" : "En desarrollo"}</span></div></div>`).join("")}</div>` : `<div class="supplier-detail"><div><span>01 / CATÁLOGO</span><strong>Ceras, fragancias y más</strong></div><div><span>02 / COMPRAS</span><strong>Envíos a Colombia</strong></div></div>`}<div class="visual-bottom"><span>${x.proofLine}</span><a href="#proyectos">Ver caso${slug === "salones" ? "s" : ""} ↓</a></div></div></section>
+<section id="proyectos" class="work-section"><div class="shell"><div class="section-head"><div><p class="section-label">01 / TRABAJO REAL</p><h2>${x.workHeading}</h2></div><p>${x.workIntro}</p></div><div class="case-grid ${slug === "surtidores" ? "single-case" : ""}">${x.projects.map(card).join("")}</div><a class="text-link" href="/proyectos/">Ver mi portafolio completo <span aria-hidden="true">↗</span></a></div></section>
+<section id="solucion" class="section shell"><div class="section-head"><div><p class="section-label">02 / LO QUE PUEDO HACER POR TI</p><h2>Una web que trabaja <em>para tu negocio.</em></h2></div><p>El diseño y las funciones se definen contigo. No tienes que adaptar tu negocio a una plantilla.</p></div><div class="features">${x.features.map(([n,t,d])=>`<article><span class="feature-tag">/${n}</span><h3>${escape(t)}</h3><p>${escape(d)}</p></article>`).join("")}</div></section>
+<section class="process shell"><div><p class="section-label">03 / SIN INTERMEDIARIOS</p><h2>Primero la demo.<br>Luego decides.</h2><p>Hablas directamente conmigo, la persona que diseña y desarrolla tu web.</p></div><ol><li><span>01</span><div><strong>Conozco tu negocio</strong><p>Me cuentas qué vendes, cómo trabajas y qué quieres mejorar.</p></div></li><li><span>02</span><div><strong>Te muestro una propuesta visual</strong><p>Preparo una demo para que puedas ver la dirección del diseño antes de pagar.</p></div></li><li><span>03</span><div><strong>Construimos tu web</strong><p>Si te gusta la propuesta, definimos alcance, precio y desarrollo.</p></div></li></ol></section>
+<section id="demo" class="section shell demo"><div class="demo-copy"><p class="section-label">04 / HABLEMOS</p><h2>Tu próxima web <em>empieza aquí.</em></h2><p>Cuéntame qué necesita tu negocio. Revisaré tu caso y hablaremos por WhatsApp sobre una demo a medida, sin compromiso de contratar.</p><div class="demo-promise"><strong>Demo gratis</strong><span>Antes de hacer cualquier pago.</span></div><p class="small-print">Desarrollo web independiente · Barranquilla, Colombia</p></div><div class="form-panel"><div class="form-heading"><span>01 / SOLICITUD DE DEMO</span><h3>Cuéntame sobre tu proyecto</h3></div>
 <form id="lead-form" data-niche="${x.niche}" data-message="${escape(x.whatsapp)}">
-<label>Nombre de tu negocio <input name="business" required minlength="2" maxlength="100" autocomplete="organization" placeholder="Ej. Mi negocio"></label>
+<label class="wide">Nombre de tu negocio <input name="business" required minlength="2" maxlength="100" autocomplete="organization" placeholder="Ej. Mi negocio"></label>
 <label>¿Qué necesitas? <select name="service" required><option value="">Selecciona una opción</option>${x.options.map(v=>`<option value="${escape(v)}">${escape(v)}</option>`).join('')}</select></label>
 <label>Presupuesto estimado <select name="budget" required><option value="">Selecciona un rango</option><option>Menos de $1.000.000 COP</option><option>$1.000.000 – $2.000.000 COP</option><option>Más de $2.000.000 COP</option><option>Por definir</option></select></label>
 <label>Tu nombre <input name="name" required minlength="2" maxlength="80" autocomplete="name" placeholder="¿Cómo te llamas?"></label>
 <label>WhatsApp de contacto <input name="phone" type="tel" required minlength="7" maxlength="25" inputmode="tel" autocomplete="tel" placeholder="+57 300 000 0000"></label>
-<label class="consent"><input type="checkbox" name="consent" required> Acepto que Miguel me contacte por WhatsApp para responder mi solicitud. <a href="mailto:hola@miguelposada.dev?subject=Tratamiento%20de%20datos">Consultar tratamiento de datos</a>.</label>
-<label class="consent"><input type="checkbox" name="measurement_consent"> Acepto la medición publicitaria de OpenAI mediante cookies. Es opcional y no afecta mi solicitud.</label>
-<button type="submit">Continuar a WhatsApp <span aria-hidden="true">↗</span></button>
-<p class="form-note" role="status" aria-live="polite">Se abrirá WhatsApp con tu solicitud lista para enviar. No se registra una solicitud completada hasta recibir tu mensaje.</p>
-</form></section>
-</main>
+<label class="consent wide"><input type="checkbox" name="consent" required> <span>Acepto que Miguel me contacte por WhatsApp para responder mi solicitud. <a href="mailto:hola@miguelposada.dev?subject=Tratamiento%20de%20datos">Consultar tratamiento de datos</a>.</span></label>
+<label class="consent wide"><input type="checkbox" name="measurement_consent"> <span>Acepto la medición publicitaria de OpenAI mediante cookies. Es opcional y no afecta mi solicitud.</span></label>
+<button class="wide" type="submit">Continuar a WhatsApp <span aria-hidden="true">↗</span></button>
+<p class="form-note wide" role="status" aria-live="polite">Se abrirá WhatsApp con tu solicitud lista para enviar. No se registra una solicitud completada hasta recibir tu mensaje.</p>
+</form></div></section></main>
 <footer class="footer shell"><span>© Miguel Posada · Desarrollador web independiente</span><a href="/">Volver al portafolio ↗</a></footer>
 <script src="/campaign.js" defer></script>
 </body></html>`
