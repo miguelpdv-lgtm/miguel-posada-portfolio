@@ -1,5 +1,5 @@
 // Landing pages enfocadas en prospectos de ChatGPT Ads.
-// No hay pixel de OpenAI hasta contar con la configuración oficial de Ads Manager.
+// Pixel oficial de OpenAI Ads con consentimiento opcional.
 const config = {
   salones: {
     title: 'Páginas web para salones de cabello rizado | Miguel Posada',
@@ -62,7 +62,7 @@ export const CAMPAIGN_PAGES = Object.entries(config).map(([slug, x]) => ({
 <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <title>${escape(x.title)}</title>
 <link rel="stylesheet" href="/campaign.css">
-<script>!function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f);}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");oaiq("init",{pixelId:"McVWcUNL32oFdfMxLG4brg",debug:false});</script>
+<script>!function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f);}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");oaiq("consent",false);oaiq("init",{pixelId:"McVWcUNL32oFdfMxLG4brg",debug:false});</script>
 </head>
 <body>
 <header class="nav"><a href="/" class="brand"><img src="/assets/logo-mark.webp" alt="" width="34" height="34"><span>miguel<span class="lime">posada</span>.dev</span></a><a href="#demo" class="nav-cta">Solicitar demo <span aria-hidden="true">↗</span></a></header>
@@ -86,6 +86,7 @@ export const CAMPAIGN_PAGES = Object.entries(config).map(([slug, x]) => ({
 <label>Tu nombre <input name="name" required minlength="2" maxlength="80" autocomplete="name" placeholder="¿Cómo te llamas?"></label>
 <label>WhatsApp de contacto <input name="phone" type="tel" required minlength="7" maxlength="25" inputmode="tel" autocomplete="tel" placeholder="+57 300 000 0000"></label>
 <label class="consent"><input type="checkbox" name="consent" required> Acepto que Miguel me contacte por WhatsApp para responder mi solicitud. <a href="mailto:hola@miguelposada.dev?subject=Tratamiento%20de%20datos">Consultar tratamiento de datos</a>.</label>
+<label class="consent"><input type="checkbox" name="measurement_consent"> Acepto la medición publicitaria de OpenAI mediante cookies. Es opcional y no afecta mi solicitud.</label>
 <button type="submit">Continuar a WhatsApp <span aria-hidden="true">↗</span></button>
 <p class="form-note" role="status" aria-live="polite">Se abrirá WhatsApp con tu solicitud lista para enviar. No se registra una solicitud completada hasta recibir tu mensaje.</p>
 </form></section>
