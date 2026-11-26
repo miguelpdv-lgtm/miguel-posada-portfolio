@@ -14,18 +14,19 @@
   const original = form.dataset.message;
   const consent = form.elements.namedItem('measurement_consent');
   const sent = new Set();
-  const measure = (name, standard = false) => {
+  const measure = (name) => {
     if (!consent?.checked || typeof window.oaiq !== 'function' || sent.has(name)) return;
     try {
-      if (standard) window.oaiq('measure', name, { type: 'contents' });
-      else window.oaiq('measure', 'custom', { type: 'custom' }, { custom_event_name: name, opt_out: true });
+      if (name === 'lead_created') window.oaiq('measure', name, { type: 'customer_action' });
+      else if (name === 'page_viewed') window.oaiq('measure', name, { type: 'contents' });
+      else window.oaiq('measure', 'custom', { type: 'custom' }, { custom_event_name: name });
       sent.add(name);
     } catch (_) { /* Measurement must not block contact. */ }
   };
   consent?.addEventListener('change', () => {
     if (typeof window.oaiq !== 'function') return;
     window.oaiq('consent', consent.checked);
-    if (consent.checked) measure('page_viewed', true);
+    if (consent.checked) measure('page_viewed');
   });
   const emit = (event, data = {}) => {
     if (typeof window.gtag === 'function') {
@@ -48,9 +49,8 @@
       phone.reportValidity();
       return;
     }
-    if (consent?.checked) {
-      measure('qualified_form_completed');
-    }
+    // A completed, validated contact request is the optimization proxy, not a received WhatsApp message.
+    measure('qualified_form_completed');
     // El envío real sucede en WhatsApp; el navegador no puede confirmar que el mensaje se envió.
     const lines = [
       original, '',
@@ -65,6 +65,9 @@
     const a = document.createElement('a');
     a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
     a.click();
+    // Standard contact-request event, only after explicit form submission and measurement consent.
+    // No claim that WhatsApp delivered the message or that the prospect became a client.
+    measure('lead_created');
     measure('lead_whatsapp_intent');
     emit('lead_whatsapp_intent', { servicio: values.service, presupuesto: values.budget, fuente: attribution.utm_source || 'direct', ubicacion: 'landing-' + niche });
     const note = form.querySelector('.form-note');
